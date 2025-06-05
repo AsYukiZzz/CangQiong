@@ -123,6 +123,16 @@ public class EmployeeServiceImpl implements EmployeeService {
         return new PageResult(pageInfo.getTotal(), pageInfo.getList());
     }
 
+    /**
+     * 修改员工启用状态
+     * @param id 员工ID
+     * @param status 员工状态
+     */
+    @Override
+    public void updateEmployeeStatus(Long id, Integer status) {
+        employeeMapper.updateEmployeeStatus(id,status);
+    }
+
 
     /**
      * 获取当前操作账户ID

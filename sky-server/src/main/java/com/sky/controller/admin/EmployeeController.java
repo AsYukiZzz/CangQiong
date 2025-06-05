@@ -94,4 +94,16 @@ public class EmployeeController {
         log.info("员工分页查询：{}", employeePageQueryDTO);
         return Result.success(employeeService.getEmployeesByPage(employeePageQueryDTO));
     }
+
+    /**
+     * 启用、禁用员工账号
+     * @param id 被修改员工对应ID
+     * @param status 员工状态数值
+     */
+    @PostMapping("/status/{status}")
+    public Result<String> updateEmployeeStatus(@RequestParam("id") Long id, @PathVariable("status") Integer status) {
+        log.info("修改员工启用状态，员工id={}，状态更改为status={}", id, status);
+        employeeService.updateEmployeeStatus(id,status);
+        return Result.success();
+    }
 }
