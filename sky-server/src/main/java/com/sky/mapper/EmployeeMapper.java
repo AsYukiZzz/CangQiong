@@ -51,4 +51,10 @@ public interface EmployeeMapper {
      */
     @Select("select id, name, username, password, phone, sex, id_number, status, create_time, update_time, create_user, update_user from employee where id = #{id}")
     Employee getEmployeesById(@Param("id") Long id);
+
+    /**
+     * 根据ID修改员工信息
+     * @param employee 员工信息封装
+     */
+    void updateEmployee(Employee employee);
 }

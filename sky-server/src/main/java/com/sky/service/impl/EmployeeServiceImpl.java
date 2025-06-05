@@ -16,7 +16,9 @@ import com.sky.mapper.EmployeeMapper;
 import com.sky.result.PageResult;
 import com.sky.service.EmployeeService;
 import com.sky.context.CurrentHolder;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
@@ -140,6 +142,23 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Employee getEmployeesById(Long id) {
         return employeeMapper.getEmployeesById(id);
+    }
+
+    /**
+     * 根据ID修改员工信息
+     * @param employeeDTO
+     */
+    @Override
+    public void updateEmployee(EmployeeDTO employeeDTO) {
+        Employee employee = Employee.builder()
+                .updateUser(getCurrentHolder())             //设置编辑人ID
+                .updateTime(LocalDateTime.now())            //更新编辑时间
+                .build();
+
+        //拷贝属性
+        BeanUtils.copyProperties(employeeDTO, employee);
+
+        employeeMapper.updateEmployee(employee);
     }
 
 

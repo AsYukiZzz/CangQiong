@@ -116,4 +116,15 @@ public class EmployeeController {
         log.info("根据id查询员工信息，id={}",id);
         return Result.success(employeeService.getEmployeesById(id));
     }
+
+    /**
+     * 根据ID修改员工信息
+     * @param employeeDTO 对员工信息数据的封装
+     */
+    @PutMapping
+    public Result<String> updateEmployee(@RequestBody EmployeeDTO employeeDTO) {
+        log.info("修改员工信息，{}", employeeDTO);
+        employeeService.updateEmployee(employeeDTO);
+        return Result.success();
+    }
 }
