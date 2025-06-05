@@ -1,15 +1,19 @@
 package com.sky.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.PasswordConstant;
 import com.sky.constant.StatusConstant;
 import com.sky.dto.EmployeeDTO;
 import com.sky.dto.EmployeeLoginDTO;
+import com.sky.dto.EmployeePageQueryDTO;
 import com.sky.entity.Employee;
 import com.sky.exception.AccountLockedException;
 import com.sky.exception.AccountNotFoundException;
 import com.sky.exception.PasswordErrorException;
 import com.sky.mapper.EmployeeMapper;
+import com.sky.result.PageResult;
 import com.sky.service.EmployeeService;
 import com.sky.context.CurrentHolder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -89,6 +94,33 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         employeeMapper.addEmployee(employee);
 
+    }
+
+    /**
+     * 分页查询员工信息
+     *
+     * @param employeePageQueryDTO 分页查询数据封装对象
+     */
+
+    @Override
+    public PageResult getEmployeesByPage(EmployeePageQueryDTO employeePageQueryDTO) {
+        int page = employeePageQueryDTO.getPage();
+        int pageSize = employeePageQueryDTO.getPageSize();
+
+        //执行分页查询并返回结果
+        PageHelper.startPage(
+                page == 0 ? 1 : page,
+                pageSize == 0 ? 10 : pageSize
+        );
+
+        // TODO 后续应使用PageInfo直接封装（修改resultType）
+        List<Employee> empList = employeeMapper.getEmployeesByPage(employeePageQueryDTO.getName());
+
+        //将PageHelper返回的集合强制转换为Page对象（Page继承List），以获取记录数与员工集合
+        PageInfo<Employee> pageInfo = new PageInfo<>(empList);
+
+        //返回员工集合
+        return new PageResult(pageInfo.getTotal(), pageInfo.getList());
     }
 
 
