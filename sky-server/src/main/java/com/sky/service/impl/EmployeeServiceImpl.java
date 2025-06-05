@@ -127,16 +127,25 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     /**
      * 修改员工启用状态
-     * @param id 员工ID
+     *
+     * @param id     员工ID
      * @param status 员工状态
      */
     @Override
     public void updateEmployeeStatus(Long id, Integer status) {
-        employeeMapper.updateEmployeeStatus(id,status);
+        Employee employee = Employee.builder()
+                .updateUser(getCurrentHolder())
+                .updateTime(LocalDateTime.now())
+                .id(id)
+                .status(status)
+                .build();
+
+        employeeMapper.updateEmployee(employee);
     }
 
     /**
      * 根据ID查询员工信息
+     *
      * @param id 员工ID
      */
     @Override
@@ -146,6 +155,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     /**
      * 根据ID修改员工信息
+     *
      * @param employeeDTO
      */
     @Override

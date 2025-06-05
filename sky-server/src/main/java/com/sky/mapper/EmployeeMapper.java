@@ -37,15 +37,6 @@ public interface EmployeeMapper {
     List<Employee> getEmployeesByPage(@Param("name") String name);
 
     /**
-     * 修改员工启用状态
-     *
-     * @param id
-     * @param status
-     */
-    @Update("update employee set status = #{status} where id = #{id}")
-    void updateEmployeeStatus(@Param("id") Long id, @Param("status") Integer status);
-
-    /**
      * 根据ID查询员工信息
      * @param id 员工ID
      */
