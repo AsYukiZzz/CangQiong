@@ -106,4 +106,14 @@ public class EmployeeController {
         employeeService.updateEmployeeStatus(id,status);
         return Result.success();
     }
+
+    /**
+     * 根据ID查询员工信息
+     * @param id 员工ID
+     */
+    @GetMapping("/{id}")
+    public Result<Employee> getEmployeeById(@PathVariable("id") Long id) {
+        log.info("根据id查询员工信息，id={}",id);
+        return Result.success(employeeService.getEmployeesById(id));
+    }
 }

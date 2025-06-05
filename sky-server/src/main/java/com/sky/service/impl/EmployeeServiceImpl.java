@@ -133,6 +133,15 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeMapper.updateEmployeeStatus(id,status);
     }
 
+    /**
+     * 根据ID查询员工信息
+     * @param id 员工ID
+     */
+    @Override
+    public Employee getEmployeesById(Long id) {
+        return employeeMapper.getEmployeesById(id);
+    }
+
 
     /**
      * 获取当前操作账户ID
