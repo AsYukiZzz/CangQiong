@@ -1,10 +1,11 @@
 package com.sky.mapper;
 
+import com.sky.anno.Autofill;
 import com.sky.entity.Employee;
+import com.sky.enumeration.OperationType;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -26,6 +27,7 @@ public interface EmployeeMapper {
      *
      * @param employee 封装完成的员工信息对象
      */
+    @Autofill(OperationType.INSERT)
     void addEmployee(Employee employee);
 
     /**
@@ -47,5 +49,6 @@ public interface EmployeeMapper {
      * 根据ID修改员工信息
      * @param employee 员工信息封装
      */
+    @Autofill(OperationType.UPDATE)
     void updateEmployee(Employee employee);
 }

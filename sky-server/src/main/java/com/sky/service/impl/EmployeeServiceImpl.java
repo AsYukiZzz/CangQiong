@@ -88,10 +88,6 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .status(StatusConstant.ENABLE)                  //设置用户状态
                 .sex(employeeDTO.getSex())                      //设置性别
                 .idNumber(employeeDTO.getIdNumber())            //设置身份证号
-                .createTime(LocalDateTime.now())                //设置创建时间
-                .updateTime(LocalDateTime.now())                //设置更新时间
-                .createUser(currentHolder)                      //设置创建该员工信息的账户
-                .updateUser(currentHolder)                      //设置最后一次操作账户
                 .build();
 
         employeeMapper.addEmployee(employee);
@@ -134,8 +130,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public void updateEmployeeStatus(Long id, Integer status) {
         Employee employee = Employee.builder()
-                .updateUser(getCurrentHolder())
-                .updateTime(LocalDateTime.now())
                 .id(id)
                 .status(status)
                 .build();
@@ -161,8 +155,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public void updateEmployee(EmployeeDTO employeeDTO) {
         Employee employee = Employee.builder()
-                .updateUser(getCurrentHolder())             //设置编辑人ID
-                .updateTime(LocalDateTime.now())            //更新编辑时间
                 .build();
 
         //拷贝属性
