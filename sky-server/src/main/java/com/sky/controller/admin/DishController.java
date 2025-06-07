@@ -64,5 +64,16 @@ public class DishController {
         return Result.success(dishService.getDishById(id));
     }
 
-
+    /**
+     * 根据ID更改菜品启用状态
+     * @param status 状态值
+     * @param id 菜品ID
+     * @return 成功结果返回
+     */
+    @PostMapping("/status/{status}")
+    public Result<String> updateDishStatus(@PathVariable String status, @RequestParam Long id) {
+        log.info("修改菜品启用状态，菜品ID={}，修改后状态status={}",id,status);
+        dishService.updateDishStatus(status,id);
+        return Result.success();
+    }
 }

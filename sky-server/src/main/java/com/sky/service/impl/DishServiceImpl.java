@@ -21,6 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -121,5 +123,21 @@ public class DishServiceImpl implements DishService {
     @Override
     public DishVO getDishById(String id) {
         return dishMapper.getDishById(id);
+    }
+
+    /**
+     * 根据ID更改菜品启用状态
+     * @param status 状态值
+     * @param id 菜品ID
+     */
+    @Override
+    public void updateDishStatus(String status, Long id) {
+        Dish dish = Dish.builder()
+                .id(id)
+                .status(Integer.valueOf(status))
+                .build();
+
+        //更新菜品状态
+        dishMapper.updateDish(dish);
     }
 }

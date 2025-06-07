@@ -19,7 +19,6 @@ public interface DishService {
      */
     PageResult getDishByPage(DishPageQueryDTO dishPageQueryDTO);
 
-
     /**
      * 批量删除菜品
      * @param ids 待删除菜品ID
@@ -32,4 +31,11 @@ public interface DishService {
      * @return 菜品信息
      */
     DishVO getDishById(String id);
+
+    /**
+     * 根据ID更改菜品启用状态
+     * @param status 状态值
+     * @param id 菜品ID
+     */
+    void updateDishStatus(String status, Long id);
 }
