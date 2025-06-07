@@ -16,6 +16,7 @@ public interface DishMapper {
 
     /**
      * 根据分类id查询菜品数量
+     *
      * @param categoryId
      * @return
      */
@@ -24,6 +25,7 @@ public interface DishMapper {
 
     /**
      * 添加菜品
+     *
      * @param dish 菜品对象
      */
     @Autofill(OperationType.INSERT)
@@ -32,6 +34,7 @@ public interface DishMapper {
 
     /**
      * 菜品分页查询
+     *
      * @param dishPageQueryDTO 菜品分页查询数据封装
      * @return 菜品集合
      */
@@ -39,14 +42,16 @@ public interface DishMapper {
 
     /**
      * 根据ID查询菜品信息
+     *
      * @param id 菜品ID
      * @return 菜品信息
      */
-    @Select("select id, name, category_id, price, image, description, status, create_time, update_time, create_user, update_user from dish where id = #{id}")
-    Dish getDishById(@Param("id") String id);
+    @Select("select d.id, d.name, d.category_id, d.price, d.image, d.description, d.status, d.update_time, c.name as categoryName from dish d left join category c on d.category_id =c.id where d.id = #{id}")
+    DishVO getDishById(@Param("id") String id);
 
     /**
      * 批量删除菜品ID
+     *
      * @param ids 待删除菜品ID
      */
     void deleteDishByIds(List<String> ids);

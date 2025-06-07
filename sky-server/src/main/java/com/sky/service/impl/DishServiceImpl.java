@@ -91,7 +91,7 @@ public class DishServiceImpl implements DishService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteDishes(List<String> ids) {
-        Dish dish;
+        DishVO dish;
         //检查菜品状态
         for (String id : ids) {
             dish = dishMapper.getDishById(id);
@@ -111,5 +111,15 @@ public class DishServiceImpl implements DishService {
 
         //删除菜品口味
         dishFlavorMapper.deleteDishFlavorByIds(ids);
+    }
+
+    /**
+     * 根据ID查询菜品
+     * @param id 待查询菜品ID
+     * @return 菜品信息
+     */
+    @Override
+    public DishVO getDishById(String id) {
+        return dishMapper.getDishById(id);
     }
 }
