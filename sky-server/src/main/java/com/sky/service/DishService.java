@@ -38,4 +38,6 @@ public interface DishService {
      * @param id 菜品ID
      */
     void updateDishStatus(String status, Long id);
+
+    void updateDish(DishDTO dishDTO);
 }

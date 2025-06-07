@@ -58,6 +58,7 @@ public class DishController {
      * @param id 待查询菜品ID
      * @return 含有菜品的结果封装信息
      */
+    //TODO 错误：菜品口味信息应一并返回到前端
     @GetMapping("/{id}")
     public Result<DishVO> getDishById(@PathVariable String id) {
         log.info("根据ID查询菜品，id={}",id);
@@ -74,6 +75,13 @@ public class DishController {
     public Result<String> updateDishStatus(@PathVariable String status, @RequestParam Long id) {
         log.info("修改菜品启用状态，菜品ID={}，修改后状态status={}",id,status);
         dishService.updateDishStatus(status,id);
+        return Result.success();
+    }
+
+    @PutMapping
+    public Result<String> updateDish(@RequestBody DishDTO dishDTO) {
+        log.info("修改菜品信息，{}", dishDTO);
+        dishService.updateDish(dishDTO);
         return Result.success();
     }
 }
