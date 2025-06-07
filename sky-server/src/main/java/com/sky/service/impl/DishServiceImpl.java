@@ -2,13 +2,17 @@ package com.sky.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.sky.constant.MessageConstant;
 import com.sky.constant.StatusConstant;
 import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
 import com.sky.entity.DishFlavor;
+import com.sky.entity.SetmealDish;
+import com.sky.exception.DeletionNotAllowedException;
 import com.sky.mapper.DishFlavorMapper;
 import com.sky.mapper.DishMapper;
+import com.sky.mapper.SetmealDishMapper;
 import com.sky.result.PageResult;
 import com.sky.service.DishService;
 import com.sky.vo.DishVO;
@@ -18,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 
 @Service
@@ -39,17 +44,21 @@ public class DishServiceImpl implements DishService {
         //向数据库添加菜品信息
         dishMapper.addDish(dish);
 
-        //获取菜品ID
-        Long dishId = dish.getId();
-
-        //为菜品口味设置对应的归属菜品ID
+        //获取菜品口味信息
         List<DishFlavor> dishFlavors = dishDTO.getFlavors();
-        for (DishFlavor df : dishFlavors) {
-            df.setDishId(dishId);
-        }
+        if (dishFlavors != null && !dishFlavors.isEmpty()) {
 
-        //向数据库中添加菜品口味信息
-        dishFlavorMapper.addDishFlavors(dishFlavors);
+            //获取菜品ID
+            Long dishId = dish.getId();
+
+            //为菜品口味设置对应的归属菜品ID
+            for (DishFlavor df : dishFlavors) {
+                df.setDishId(dishId);
+            }
+
+            //向数据库中添加菜品口味信息
+            dishFlavorMapper.addDishFlavors(dishFlavors);
+        }
     }
 
 
