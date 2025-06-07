@@ -88,6 +88,7 @@ public class DishServiceImpl implements DishService {
 
     /**
      * 批量删除菜品
+     *
      * @param ids 待删除菜品ID
      */
     @Override
@@ -117,18 +118,27 @@ public class DishServiceImpl implements DishService {
 
     /**
      * 根据ID查询菜品
+     *
      * @param id 待查询菜品ID
      * @return 菜品信息
      */
     @Override
     public DishVO getDishById(String id) {
-        return dishMapper.getDishById(id);
+        //获取菜品信息
+        DishVO dishVO = dishMapper.getDishById(id);
+
+        if (dishVO != null) {
+            dishVO.setFlavors(dishFlavorMapper.getDishFlavorById(id));
+        }
+        //获取菜品口味信息
+        return dishVO;
     }
 
     /**
      * 根据ID更改菜品启用状态
+     *
      * @param status 状态值
-     * @param id 菜品ID
+     * @param id     菜品ID
      */
     @Override
     public void updateDishStatus(String status, Long id) {

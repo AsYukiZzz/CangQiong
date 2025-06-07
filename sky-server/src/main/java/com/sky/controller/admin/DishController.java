@@ -58,7 +58,6 @@ public class DishController {
      * @param id 待查询菜品ID
      * @return 含有菜品的结果封装信息
      */
-    //TODO 错误：菜品口味信息应一并返回到前端
     @GetMapping("/{id}")
     public Result<DishVO> getDishById(@PathVariable String id) {
         log.info("根据ID查询菜品，id={}",id);
