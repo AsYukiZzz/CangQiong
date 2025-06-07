@@ -4,6 +4,8 @@ import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.result.PageResult;
 
+import java.util.List;
+
 public interface DishService {
 
     void addDish(DishDTO dishDTO);
@@ -15,4 +17,11 @@ public interface DishService {
      * @return 返回结果
      */
     PageResult getDishByPage(DishPageQueryDTO dishPageQueryDTO);
+
+
+    /**
+     * 批量删除菜品
+     * @param ids 待删除菜品ID
+     */
+    void deleteDishes(List<String> ids);
 }

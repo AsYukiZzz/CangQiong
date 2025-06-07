@@ -32,6 +32,8 @@ public class DishServiceImpl implements DishService {
     private DishMapper dishMapper;
     @Autowired
     private DishFlavorMapper dishFlavorMapper;
+    @Autowired
+    private SetmealDishMapper setmealDishMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -80,5 +82,34 @@ public class DishServiceImpl implements DishService {
         PageInfo<DishVO> pageInfo = new PageInfo<>(dishList);
 
         return new PageResult(pageInfo.getTotal(), pageInfo.getList());
+    }
+
+    /**
+     * 批量删除菜品
+     * @param ids 待删除菜品ID
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteDishes(List<String> ids) {
+        Dish dish;
+        //检查菜品状态
+        for (String id : ids) {
+            dish = dishMapper.getDishById(id);
+            if (Objects.equals(dish.getStatus(), StatusConstant.ENABLE)) {
+                throw new DeletionNotAllowedException(MessageConstant.DISH_ON_SALE);
+            }
+        }
+
+        //检查菜品是否被套餐关联：被关联则无法删除
+        List<SetmealDish> setmealDishList = setmealDishMapper.getSetmealByDishId(ids);
+        if (setmealDishList != null && !setmealDishList.isEmpty()) {
+            throw new DeletionNotAllowedException(MessageConstant.DISH_BE_RELATED_BY_SETMEAL);
+        }
+
+        //删除菜品
+        dishMapper.deleteDishByIds(ids);
+
+        //删除菜品口味
+        dishFlavorMapper.deleteDishFlavorByIds(ids);
     }
 }

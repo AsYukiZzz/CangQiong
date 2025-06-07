@@ -6,6 +6,7 @@ import com.sky.entity.Dish;
 import com.sky.enumeration.OperationType;
 import com.sky.vo.DishVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -35,4 +36,18 @@ public interface DishMapper {
      * @return 菜品集合
      */
     List<DishVO> getDishByPage(DishPageQueryDTO dishPageQueryDTO);
+
+    /**
+     * 根据ID查询菜品信息
+     * @param id 菜品ID
+     * @return 菜品信息
+     */
+    @Select("select id, name, category_id, price, image, description, status, create_time, update_time, create_user, update_user from dish where id = #{id}")
+    Dish getDishById(@Param("id") String id);
+
+    /**
+     * 批量删除菜品ID
+     * @param ids 待删除菜品ID
+     */
+    void deleteDishByIds(List<String> ids);
 }

@@ -10,4 +10,10 @@ public interface DishFlavorMapper {
 
 
     void addDishFlavors(List<DishFlavor> dishFlavors);
+
+    /**
+     * 批量删除指定ID菜品的口味
+     * @param ids 待删除菜品ID
+     */
+    void deleteDishFlavorByIds(List<String> ids);
 }
