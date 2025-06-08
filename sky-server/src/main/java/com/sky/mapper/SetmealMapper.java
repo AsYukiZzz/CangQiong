@@ -4,7 +4,9 @@ import com.sky.anno.Autofill;
 import com.sky.dto.SetmealPageQueryDTO;
 import com.sky.entity.Setmeal;
 import com.sky.enumeration.OperationType;
+import com.sky.vo.SetmealVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -33,4 +35,18 @@ public interface SetmealMapper {
      */
     @Autofill(OperationType.INSERT)
     void addSetmeal(Setmeal setmeal);
+
+    /**
+     * 根据ID查询套餐信息
+     * @param id 套餐ID
+     * @return 套餐信息封装
+     */
+    @Select("select s.id, s.category_id, s.name, s.price, s.status, s.description, s.image, s.update_user, c.name as categoryName from setmeal s left join category c on s.category_id = c.id where s.id=#{id}")
+    SetmealVO getSetmealById(@Param("id") String id);
+
+    /**
+     * 批量删除套餐
+     * @param ids 套餐ID集合
+     */
+    void deleteSetmeals(List<String> ids);
 }
