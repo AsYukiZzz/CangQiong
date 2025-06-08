@@ -37,4 +37,10 @@ public interface SetmealService {
      * @return 套餐信息
      */
     SetmealVO getSetmealById(String id);
+
+    /**
+     * 根据ID更改套餐信息
+     * @param setmealDTO 套餐信息封装
+     */
+    void updateSetmeal(SetmealDTO setmealDTO);
 }

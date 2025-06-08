@@ -69,4 +69,16 @@ public class SetmealController {
         return Result.success(setmealService.getSetmealById(id));
     }
 
+    /**
+     * 根据ID修改套餐
+     * @param setmealDTO 套餐信息封装
+     * @return 正常操作结果
+     */
+    @PutMapping
+    public Result<String> updateSetmeal(@RequestBody SetmealDTO setmealDTO){
+        log.info("根据ID修改套餐，{}",setmealDTO);
+        setmealService.updateSetmeal(setmealDTO);
+        return Result.success();
+    }
+
 }
