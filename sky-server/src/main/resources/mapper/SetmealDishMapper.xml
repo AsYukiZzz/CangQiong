@@ -11,7 +11,7 @@
         </foreach>
     </insert>
 
-    <select id="getSetmealByDishId" resultType="com.sky.entity.SetmealDish">
+    <select id="getSetmealDishByDishId" resultType="com.sky.entity.SetmealDish">
         select id, setmeal_id, dish_id, name, price, copies from setmeal_dish where id in
         <foreach collection="ids" item="id" separator="," open="(" close=")" >
             #{id}

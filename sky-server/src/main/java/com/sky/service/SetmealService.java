@@ -1,8 +1,11 @@
 package com.sky.service;
 
+import com.sky.anno.Autofill;
 import com.sky.dto.SetmealDTO;
 import com.sky.dto.SetmealPageQueryDTO;
+import com.sky.enumeration.OperationType;
 import com.sky.result.PageResult;
+import com.sky.vo.SetmealVO;
 
 import java.util.List;
 
@@ -19,6 +22,7 @@ public interface SetmealService {
      * 添加套餐
      * @param setmealDTO 套餐信息封装
      */
+    @Autofill(OperationType.INSERT)
     void addSetmeal(SetmealDTO setmealDTO);
 
     /**
@@ -26,4 +30,11 @@ public interface SetmealService {
      * @param ids 套餐ID集合
      */
     void deleteSetmeal(List<String> ids);
+
+    /**
+     * 根据ID查询套餐信息
+     * @param id 套餐ID
+     * @return 套餐信息
+     */
+    SetmealVO getSetmealById(String id);
 }
