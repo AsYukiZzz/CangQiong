@@ -83,4 +83,10 @@ public class DishController {
         dishService.updateDish(dishDTO);
         return Result.success();
     }
+
+    @GetMapping("/list")
+    public Result<List<DishVO>> getDishByList(String categoryId) {
+        log.info("根据分组查询菜品，categoryId={}",categoryId);
+        return Result.success(dishService.getDishByList(categoryId));
+    }
 }

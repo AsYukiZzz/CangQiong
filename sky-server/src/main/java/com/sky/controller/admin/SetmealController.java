@@ -1,14 +1,13 @@
 package com.sky.controller.admin;
 
+import com.sky.dto.SetmealDTO;
 import com.sky.dto.SetmealPageQueryDTO;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.SetmealService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 套餐管理
@@ -30,6 +29,18 @@ public class SetmealController {
     public Result<PageResult> getSetmealByPage(SetmealPageQueryDTO setmealPageQueryDTO){
         log.info("套餐分页查询，{}", setmealPageQueryDTO);
         return Result.success(setmealService.getSetmealByPage(setmealPageQueryDTO));
+    }
+
+    /**
+     * 增加套餐
+     * @param setmealDTO 套餐信息封装
+     * @return 正常添加结果
+     */
+    @PostMapping
+    public Result<String> addSetmeal(@RequestBody SetmealDTO setmealDTO){
+        log.info("增加套餐，{}", setmealDTO);
+        setmealService.addSetmeal(setmealDTO);
+        return Result.success();
     }
 
 }

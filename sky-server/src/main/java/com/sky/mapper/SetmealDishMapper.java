@@ -14,4 +14,10 @@ public interface SetmealDishMapper {
      * @return 套餐列表
      */
     List<SetmealDish> getSetmealByDishId(List<String> ids);
+
+    /**
+     * 添加套餐-菜品关系
+     * @param setmealDishList 谭灿-菜品关系集合
+     */
+    void addSetmealDish(List<SetmealDish> setmealDishList);
 }
