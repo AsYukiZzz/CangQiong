@@ -43,4 +43,11 @@ public interface SetmealService {
      * @param setmealDTO 套餐信息封装
      */
     void updateSetmeal(SetmealDTO setmealDTO);
+
+    /**
+     * 根据ID修改套餐启用状态
+     * @param status 修改后状态
+     * @param id 套餐ID
+     */
+    void updateSetmealStatus(Integer status, Long id);
 }
