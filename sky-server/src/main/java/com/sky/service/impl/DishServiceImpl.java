@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -104,7 +103,7 @@ public class DishServiceImpl implements DishService {
         }
 
         //检查菜品是否被套餐关联：被关联则无法删除
-        List<SetmealDish> setmealDishList = setmealDishMapper.getSetmealByDishId(ids);
+        List<SetmealDish> setmealDishList = setmealDishMapper.getSetmealDishByDishId(ids);
         if (setmealDishList != null && !setmealDishList.isEmpty()) {
             throw new DeletionNotAllowedException(MessageConstant.DISH_BE_RELATED_BY_SETMEAL);
         }
@@ -172,5 +171,10 @@ public class DishServiceImpl implements DishService {
             }
             dishFlavorMapper.addDishFlavors(dishDTO.getFlavors());
         }
+    }
+
+    @Override
+    public List<DishVO> getDishByList(String categoryId) {
+        return dishMapper.getDishByList(categoryId);
     }
 }

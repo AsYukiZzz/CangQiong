@@ -40,4 +40,6 @@ public interface DishService {
     void updateDishStatus(String status, Long id);
 
     void updateDish(DishDTO dishDTO);
+
+    List<DishVO> getDishByList(String categoryId);
 }
