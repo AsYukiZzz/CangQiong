@@ -25,13 +25,13 @@ import java.util.Map;
  */
 public class HttpClientUtil {
 
-    static final  int TIMEOUT_MSEC = 5 * 1000;
+    static final int TIMEOUT_MSEC = 5 * 1000;
 
     /**
      * 发送GET方式请求
-     * @param url
-     * @param paramMap
-     * @return
+     * @param url 请求URL
+     * @param paramMap 请求参数列表封装
+     * @return 返回数据的字符串形式
      */
     public static String doGet(String url,Map<String,String> paramMap){
         // 创建Httpclient对象
@@ -75,8 +75,8 @@ public class HttpClientUtil {
 
     /**
      * 发送POST方式请求
-     * @param url
-     * @param paramMap
+     * @param url 请求URL
+     * @param paramMap 请求参数列表封装
      * @return
      * @throws IOException
      */
@@ -92,7 +92,7 @@ public class HttpClientUtil {
 
             // 创建参数列表
             if (paramMap != null) {
-                List<NameValuePair> paramList = new ArrayList();
+                List<NameValuePair> paramList = new ArrayList<>();
                 for (Map.Entry<String, String> param : paramMap.entrySet()) {
                     paramList.add(new BasicNameValuePair(param.getKey(), param.getValue()));
                 }
@@ -122,8 +122,8 @@ public class HttpClientUtil {
 
     /**
      * 发送POST方式请求
-     * @param url
-     * @param paramMap
+     * @param url 请求URL
+     * @param paramMap 请求参数列表封装
      * @return
      * @throws IOException
      */

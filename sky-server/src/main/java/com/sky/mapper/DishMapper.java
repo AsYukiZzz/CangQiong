@@ -64,6 +64,7 @@ public interface DishMapper {
     @Autofill(OperationType.UPDATE)
     void updateDish(Dish dish);
 
-    @Select("select id, name, category_id, price, image, description, status, update_time from dish where category_id = #{categoryId}")
-    List<DishVO> getDishByList(@Param("categoryId") String categoryId);
+
+
+    List<DishVO> getDishByList(Dish dish);
 }

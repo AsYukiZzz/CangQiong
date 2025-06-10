@@ -29,6 +29,14 @@
         order by d.update_time DESC
     </select>
 
+    <select id="getDishByList" resultType="com.sky.vo.DishVO">
+        select id, name, category_id, price, image, description, status, update_time from dish
+        <where>
+            <if test="categoryId != null">and category_id = #{categoryId}</if>
+            <if test="status != null">and status = #{status}</if>
+        </where>
+    </select>
+
     <update id="updateDish">
         update dish
         <set>
