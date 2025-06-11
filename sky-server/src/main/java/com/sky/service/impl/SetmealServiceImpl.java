@@ -22,6 +22,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -95,6 +96,9 @@ public class SetmealServiceImpl implements SetmealService {
 
         //删除套餐信息
         setmealMapper.deleteSetmeals(ids);
+
+        //删除套餐菜品关联信息
+        setmealDishMapper.deleteSetmealDishBySetmealId(ids);
     }
 
     /**
@@ -132,7 +136,7 @@ public class SetmealServiceImpl implements SetmealService {
         Long setmealId = setmeal.getId();
 
         //删除套餐-菜品关系信息
-        setmealDishMapper.deleteSetmealDishBySetmealId(setmealId);
+        setmealDishMapper.deleteSetmealDishBySetmealId(Collections.singletonList(String.valueOf(setmealId)));
 
         //添加更改后的套餐-菜品关系信息
         for (SetmealDish setmealDish : setmealDTO.getSetmealDishes()) {

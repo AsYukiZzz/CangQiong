@@ -177,8 +177,15 @@ public class DishServiceImpl implements DishService {
 
         //更新菜品信息
         dishMapper.updateDish(dish);
-
         Long id = dish.getId();
+
+        //更新菜品-套餐对应关系表信息
+        SetmealDish setmealDish = SetmealDish.builder()
+                .dishId(id)
+                .price(dishDTO.getPrice())
+                .name(dishDTO.getName())
+                .build();
+        setmealDishMapper.updateSetmealDishByDishId(setmealDish);
 
         //删除原有菜品口味信息
         dishFlavorMapper.deleteDishFlavorByIds(Collections.singletonList(String.valueOf(id)));
