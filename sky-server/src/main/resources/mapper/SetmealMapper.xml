@@ -23,6 +23,9 @@
             update_user = #{updateUser}
         </set>
         where id = #{id}
+        <selectKey resultType="long" order="AFTER" keyProperty="categoryId">
+            select category_id from setmeal where id = #{id}
+        </selectKey>
     </update>
 
     <delete id="deleteSetmeals">

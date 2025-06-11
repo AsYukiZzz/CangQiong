@@ -89,14 +89,13 @@ public class SetmealController {
     /**
      * 根据ID修改套餐启用状态
      *
-     * @param status 修改后套餐状态
-     * @param id     套餐ID
+     * @param setmealDTO 套餐信息封装
      * @return 正常操作返回
      */
     @PostMapping("/status/{status}")
-    public Result<String> updateSetmealStatus(@PathVariable Integer status, Long id) {
-        log.info("根据ID修改套餐启用状态，套餐id={}，修改后状态status={}", id, status);
-        setmealService.updateSetmealStatus(status, id);
+    public Result<String> updateSetmealStatus(SetmealDTO setmealDTO) {
+        log.info("根据ID修改套餐启用状态，套餐id={}，修改后状态status={}", setmealDTO.getId(), setmealDTO.getStatus());
+        setmealService.updateSetmealStatus(setmealDTO);
         return Result.success();
     }
 

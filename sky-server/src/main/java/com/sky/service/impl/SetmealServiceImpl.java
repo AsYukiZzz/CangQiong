@@ -2,6 +2,7 @@ package com.sky.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.sky.constant.CacheNameConstant;
 import com.sky.constant.MessageConstant;
 import com.sky.dto.SetmealDTO;
 import com.sky.dto.SetmealPageQueryDTO;
@@ -16,6 +17,8 @@ import com.sky.vo.DishItemVO;
 import com.sky.vo.SetmealVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,6 +55,7 @@ public class SetmealServiceImpl implements SetmealService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(cacheNames = CacheNameConstant.CATEGORY_SETMEAL, key = "#setmealDTO.categoryId")
     public void addSetmeal(SetmealDTO setmealDTO) {
         Setmeal setmeal = new Setmeal();
         BeanUtils.copyProperties(setmealDTO, setmeal);
@@ -79,6 +83,7 @@ public class SetmealServiceImpl implements SetmealService {
      * @param ids 套餐ID集合
      */
     @Override
+    @CacheEvict(cacheNames = CacheNameConstant.CATEGORY_SETMEAL, allEntries = true)
     public void deleteSetmeal(List<String> ids) {
         //检查套餐启用状态：启用的套餐不能删除
         for (String id : ids) {
@@ -116,6 +121,7 @@ public class SetmealServiceImpl implements SetmealService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(cacheNames = CacheNameConstant.CATEGORY_SETMEAL, key = "#setmealDTO.categoryId")
     public void updateSetmeal(SetmealDTO setmealDTO) {
         //更改套餐信息
         Setmeal setmeal = new Setmeal();
@@ -137,35 +143,41 @@ public class SetmealServiceImpl implements SetmealService {
     }
 
     /**
-     * 根据套餐ID修改套餐启用状态
-     * @param status 修改后状态
-     * @param id 套餐ID
+     * 根据ID修改套餐启用状态
+     *
+     * @param setmealDTO 套餐信息封装
      */
     @Override
-    public void updateSetmealStatus(Integer status, Long id) {
+    @CacheEvict(cacheNames = CacheNameConstant.CATEGORY_SETMEAL, key = "#setmealDTO.categoryId")
+    public void updateSetmealStatus(SetmealDTO setmealDTO) {
         Setmeal setmeal = Setmeal.builder()
-                .id(id)
-                .status(status)
+                .id(setmealDTO.getId())
+                .status(setmealDTO.getStatus())
                 .build();
 
         //修改套餐状态
         setmealMapper.updateSetmeal(setmeal);
+
+        //将数据库查询返回的结果中的categoryId反向赋值回setmealDTO对象中，以便于缓存操作
+        setmealDTO.setCategoryId(setmeal.getCategoryId());
     }
 
     /**
-     * 条件查询
-     * @param setmeal
-     * @return
+     * 根据分类ID查询套餐列表
+     *
+     * @param setmealDTO 前端查询条件封装
+     * @return 套餐列表信息封装
      */
-    public List<Setmeal> list(Setmeal setmeal) {
-        List<Setmeal> list = setmealMapper.list(setmeal);
-        return list;
+    @Cacheable(cacheNames = CacheNameConstant.CATEGORY_SETMEAL, key = "#setmealDTO.categoryId")
+    public List<Setmeal> list(SetmealDTO setmealDTO) {
+        return setmealMapper.list(setmealDTO);
     }
 
     /**
-     * 根据id查询菜品选项
-     * @param id
-     * @return
+     * 根据套餐ID查询菜品列表
+     *
+     * @param id 套餐ID
+     * @return 菜品列表信息封装
      */
     public List<DishItemVO> getDishItemById(Long id) {
         return setmealMapper.getDishItemBySetmealId(id);
