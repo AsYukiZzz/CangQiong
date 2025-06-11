@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Objects;
+
 /**
  * 店铺状态管理
  */
@@ -19,17 +21,19 @@ public class AdminShopController {
 
     /**
      * 管理端获取店铺经营状态
+     *
      * @return 店铺状态
      */
     @GetMapping("/status")
     public Result<Integer> getShopStatus() {
         log.info("管理端获取店铺营业状态");
-        Integer status = Integer.valueOf((String) redisTemplate.opsForValue().get("shop_status"));
+        Integer status = Integer.valueOf((String) Objects.requireNonNull(redisTemplate.opsForValue().get("shop_status")));
         return Result.success(status);
     }
 
     /**
      * 管理端设置店铺经营状态
+     *
      * @param status 店铺状态
      * @return 成功操作结果
      */

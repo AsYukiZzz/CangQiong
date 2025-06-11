@@ -41,12 +41,12 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
     protected void addInterceptors(InterceptorRegistry registry) {
         log.info("开始注册自定义拦截器...");
 
-        //管理端请求拦截注册
+        //管理端请求拦截器注册
         registry.addInterceptor(jwtTokenAdminInterceptor)
                 .addPathPatterns("/admin/**")
                 .excludePathPatterns("/admin/employee/login");
 
-        //用户端请求拦截注册
+        //用户端请求拦截器注册
         registry.addInterceptor(jwtTokenUserInterceptor)
                 .addPathPatterns("/user/**")
                 .excludePathPatterns("/user/user/login")
@@ -57,7 +57,6 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
     /**
      * 通过knife4j生成接口文档
      *
-     * @return
      */
     @Bean
     public Docket docket() {
@@ -78,7 +77,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
     /**
      * 设置静态资源映射
      *
-     * @param registry
+     * @param registry 静态资源注册器
      */
     protected void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/doc.html").addResourceLocations("classpath:/META-INF/resources/");

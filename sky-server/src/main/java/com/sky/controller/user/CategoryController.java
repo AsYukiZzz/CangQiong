@@ -9,8 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.util.List;
 
+/**
+ * 分类相关接口
+ */
 @Slf4j
 @RestController("userCategoryController")
 @RequestMapping("/user/category")
@@ -21,6 +25,7 @@ public class CategoryController {
 
     /**
      * 查询分类
+     *
      * @param type 分类ID
      * @return 分类信息封装
      */

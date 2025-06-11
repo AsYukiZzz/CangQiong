@@ -32,6 +32,7 @@ public class DishController {
 
     /**
      * 菜品分页查询
+     *
      * @param dishPageQueryDTO 菜品分页查询数据分封装
      * @return 返回给前端的结果
      */
@@ -43,6 +44,7 @@ public class DishController {
 
     /**
      * 批量删除菜品
+     *
      * @param ids 待删除菜品ID
      * @return 成功返回结果
      */
@@ -55,28 +57,36 @@ public class DishController {
 
     /**
      * 根据ID查询菜品
+     *
      * @param id 待查询菜品ID
      * @return 含有菜品的结果封装信息
      */
     @GetMapping("/{id}")
     public Result<DishVO> getDishById(@PathVariable String id) {
-        log.info("根据ID查询菜品，id={}",id);
+        log.info("根据ID查询菜品，id={}", id);
         return Result.success(dishService.getDishById(id));
     }
 
     /**
      * 根据ID更改菜品启用状态
+     *
      * @param status 状态值
-     * @param id 菜品ID
+     * @param id     菜品ID
      * @return 成功结果返回
      */
     @PostMapping("/status/{status}")
     public Result<String> updateDishStatus(@PathVariable String status, @RequestParam Long id) {
-        log.info("修改菜品启用状态，菜品ID={}，修改后状态status={}",id,status);
-        dishService.updateDishStatus(status,id);
+        log.info("修改菜品启用状态，菜品ID={}，修改后状态status={}", id, status);
+        dishService.updateDishStatus(status, id);
         return Result.success();
     }
 
+    /**
+     * 根据ID修改菜品信息
+     *
+     * @param dishDTO 菜品修改信息封装
+     * @return 菜品信息修改成功结果返回
+     */
     @PutMapping
     public Result<String> updateDish(@RequestBody DishDTO dishDTO) {
         log.info("修改菜品信息，{}", dishDTO);
@@ -84,9 +94,15 @@ public class DishController {
         return Result.success();
     }
 
+    /**
+     * 根据分类ID查询菜品信息
+     *
+     * @param categoryId 分类ID
+     * @return 目标菜品信息集合
+     */
     @GetMapping("/list")
     public Result<List<DishVO>> getDishByList(String categoryId) {
-        log.info("根据分组查询菜品，categoryId={}",categoryId);
+        log.info("根据分组查询菜品，categoryId={}", categoryId);
         return Result.success(dishService.getDishByList(categoryId));
     }
 }

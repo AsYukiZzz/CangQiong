@@ -32,10 +32,10 @@ public class EmployeeController {
     private JwtProperties jwtProperties;
 
     /**
-     * 登录
+     * 员工登录
      *
-     * @param employeeLoginDTO
-     * @return
+     * @param employeeLoginDTO 员工登录信息封装
+     * @return 员工登录成功信息返回（Token等）
      */
     @PostMapping("/login")
     public Result<EmployeeLoginVO> login(@RequestBody EmployeeLoginDTO employeeLoginDTO) {
@@ -62,9 +62,9 @@ public class EmployeeController {
     }
 
     /**
-     * 退出
+     * 员工退出登录
      *
-     * @return
+     * @return 退出登录成功结果返回
      */
     @PostMapping("/logout")
     public Result<String> logout() {
@@ -75,7 +75,7 @@ public class EmployeeController {
      * 新增员工
      *
      * @param employeeDTO 对前端发送的json格式数据的封装
-     * @return
+     * @return 熙增员工成功结果返回
      */
     @PostMapping("")
     public Result<String> addEmployee(@RequestBody EmployeeDTO employeeDTO) {
@@ -97,28 +97,31 @@ public class EmployeeController {
 
     /**
      * 启用、禁用员工账号
-     * @param id 被修改员工对应ID
+     *
+     * @param id     被修改员工对应ID
      * @param status 员工状态数值
      */
     @PostMapping("/status/{status}")
     public Result<String> updateEmployeeStatus(@RequestParam("id") Long id, @PathVariable("status") Integer status) {
         log.info("修改员工启用状态，员工id={}，状态更改为status={}", id, status);
-        employeeService.updateEmployeeStatus(id,status);
+        employeeService.updateEmployeeStatus(id, status);
         return Result.success();
     }
 
     /**
      * 根据ID查询员工信息
+     *
      * @param id 员工ID
      */
     @GetMapping("/{id}")
     public Result<Employee> getEmployeeById(@PathVariable("id") Long id) {
-        log.info("根据id查询员工信息，id={}",id);
+        log.info("根据id查询员工信息，id={}", id);
         return Result.success(employeeService.getEmployeesById(id));
     }
 
     /**
      * 根据ID修改员工信息
+     *
      * @param employeeDTO 对员工信息数据的封装
      */
     @PutMapping
