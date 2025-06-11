@@ -50,6 +50,9 @@
             update_time = #{updateTime},
         </set>
         where id = #{id}
+        <selectKey keyProperty="categoryId" order="AFTER" resultType="long">
+            select category_id from dish where id = #{id}
+        </selectKey>
     </update>
 
 </mapper>

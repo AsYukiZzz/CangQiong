@@ -2,6 +2,7 @@ package com.sky.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.sky.constant.CacheNameConstant;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.StatusConstant;
 import com.sky.dto.DishDTO;
@@ -18,6 +19,8 @@ import com.sky.service.DishService;
 import com.sky.vo.DishVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,8 +39,14 @@ public class DishServiceImpl implements DishService {
     @Autowired
     private SetmealDishMapper setmealDishMapper;
 
+    /**
+     * 增加菜品
+     *
+     * @param dishDTO 菜品信息封装
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(cacheNames = CacheNameConstant.CATEGORY_DISH, key = "#dishDTO.categoryId")
     public void addDish(DishDTO dishDTO) {
         //构造菜品信息对象
         Dish dish = new Dish();
@@ -92,6 +101,7 @@ public class DishServiceImpl implements DishService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(cacheNames = CacheNameConstant.CATEGORY_DISH, allEntries = true)
     public void deleteDishes(List<String> ids) {
         DishVO dish;
         //检查菜品状态
@@ -136,22 +146,31 @@ public class DishServiceImpl implements DishService {
     /**
      * 根据ID更改菜品启用状态
      *
-     * @param status 状态值
-     * @param id     菜品ID
+     * @param dishDTO 待更改信息封装
      */
     @Override
-    public void updateDishStatus(String status, Long id) {
+    @CacheEvict(cacheNames = CacheNameConstant.CATEGORY_DISH, key = "#dishDTO.categoryId")
+    public void updateDishStatus(DishDTO dishDTO) {
         Dish dish = Dish.builder()
-                .id(id)
-                .status(Integer.valueOf(status))
+                .id(dishDTO.getId())
+                .status(dishDTO.getStatus())
                 .build();
 
         //更新菜品状态
         dishMapper.updateDish(dish);
+
+        //将菜品的categoryId返回给dishDTO对象，以完成缓存相关操作
+        dishDTO.setCategoryId(dish.getCategoryId());
     }
 
+    /**
+     * 根据ID修改菜品信息
+     *
+     * @param dishDTO 待更改信息封装
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(cacheNames = CacheNameConstant.CATEGORY_DISH, key = "#dishDTO.categoryId")
     public void updateDish(DishDTO dishDTO) {
         Dish dish = new Dish();
         BeanUtils.copyProperties(dishDTO, dish);
@@ -175,18 +194,19 @@ public class DishServiceImpl implements DishService {
 
     @Override
     public List<DishVO> getDishByList(String categoryId) {
-        Dish dish = Dish.builder().categoryId(Long.valueOf(categoryId)).build();
-        return dishMapper.getDishByList(dish);
+        DishDTO dishDTO = DishDTO.builder().categoryId(Long.valueOf(categoryId)).build();
+        return dishMapper.getDishByList(dishDTO);
     }
 
     /**
      * 条件查询菜品和口味
      *
-     * @param dish 菜品信息封装（进包含条件）
+     * @param dishDTO 查询条件封装
      * @return 符合条件的菜品信息集合封装
      */
-    public List<DishVO> listWithFlavor(Dish dish) {
-        List<DishVO> dishList = dishMapper.getDishByList(dish);
+    @Cacheable(cacheNames = CacheNameConstant.CATEGORY_DISH, key = "#dishDTO.categoryId")
+    public List<DishVO> listWithFlavor(DishDTO dishDTO) {
+        List<DishVO> dishList = dishMapper.getDishByList(dishDTO);
 
         for (DishVO d : dishList) {
             //根据菜品id查询对应的口味

@@ -1,6 +1,7 @@
 package com.sky.mapper;
 
 import com.sky.anno.Autofill;
+import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
 import com.sky.enumeration.OperationType;
@@ -66,5 +67,5 @@ public interface DishMapper {
 
 
 
-    List<DishVO> getDishByList(Dish dish);
+    List<DishVO> getDishByList(DishDTO dishDTO);
 }
