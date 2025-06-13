@@ -76,4 +76,11 @@ public interface OrdersService {
      * @param ordersRejectionDTO 拒单信息封装
      */
     void rejectOrder(OrdersRejectionDTO ordersRejectionDTO);
+
+    /**
+     * 管理端取消订单
+     *
+     * @param ordersCancelDTO 取消订单信息封装
+     */
+    void cancelOrder(OrdersCancelDTO ordersCancelDTO);
 }

@@ -290,9 +290,30 @@ public class OrdersServiceImpl implements OrdersService {
         verifyOrder(order, Orders.TO_BE_CONFIRMED);
 
         //更改订单信息
-        //todo 拒单与取消订单区别？
+        //todo 拒单与取消订单区别？是否需要与拒绝原因也进行校验？
         order.setStatus(Orders.CANCELLED);
+        order.setCancelTime(LocalDateTime.now());
         order.setRejectionReason(ordersRejectionDTO.getRejectionReason());
+        ordersMapper.updateOrders(order);
+    }
+
+    /**
+     * 管理端取消订单
+     *
+     * @param ordersCancelDTO 取消订单信息封装
+     */
+    @Override
+    public void cancelOrder(OrdersCancelDTO ordersCancelDTO) {
+        //查询原订单信息以进行校验
+        OrderVO order = ordersMapper.getOrderById(String.valueOf(ordersCancelDTO.getId()));
+
+        //校验订单状态
+        verifyOrder(order, Orders.CONFIRMED, Orders.DELIVERY_IN_PROGRESS, Orders.COMPLETED);
+
+        //更改订单信息
+        order.setStatus(Orders.CANCELLED);
+        order.setCancelReason(ordersCancelDTO.getCancelReason());
+        order.setCancelTime(LocalDateTime.now());
         ordersMapper.updateOrders(order);
     }
 
