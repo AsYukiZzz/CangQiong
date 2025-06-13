@@ -265,20 +265,57 @@ public class OrdersServiceImpl implements OrdersService {
      */
     @Override
     public void takeOrder(OrdersConfirmDTO ordersConfirmDTO) {
-        //查询原订单信息进行校验
+        //查询原订单信息以进行校验
         OrderVO order = ordersMapper.getOrderById(String.valueOf(ordersConfirmDTO.getId()));
 
-        if (order == null) {
-            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
-        }
-
-        if (!order.getStatus().equals(Orders.TO_BE_CONFIRMED)) {
-            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
-        }
+        //校验订单状态
+        verifyOrder(order, Orders.TO_BE_CONFIRMED);
 
         //更改订单状态
         order.setStatus(Orders.CONFIRMED);
         ordersMapper.updateOrders(order);
+    }
+
+    /**
+     * 管理端拒单
+     *
+     * @param ordersRejectionDTO 拒单信息封装
+     */
+    @Override
+    public void rejectOrder(OrdersRejectionDTO ordersRejectionDTO) {
+        //查询原订单信息以进行校验
+        OrderVO order = ordersMapper.getOrderById(String.valueOf(ordersRejectionDTO.getId()));
+
+        //校验订单状态
+        verifyOrder(order, Orders.TO_BE_CONFIRMED);
+
+        //更改订单信息
+        //todo 拒单与取消订单区别？
+        order.setStatus(Orders.CANCELLED);
+        order.setRejectionReason(ordersRejectionDTO.getRejectionReason());
+        ordersMapper.updateOrders(order);
+    }
+
+    /**
+     * 校验订单状态
+     *
+     * @param order             订单
+     * @param targetOrderStatus 预期订单状态，可变参数
+     */
+    private void verifyOrder(OrderVO order, int... targetOrderStatus) {
+        //订单为null，则抛出订单不存在异常
+        if (order == null) {
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
+
+        //订单状态不是预期状态，则抛出“订单状态异常”异常
+        for (int status : targetOrderStatus) {
+            if (order.getStatus().equals(status)) {
+                return;
+            }
+        }
+
+        throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
     }
 
 }
