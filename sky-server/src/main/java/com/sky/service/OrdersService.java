@@ -1,6 +1,8 @@
 package com.sky.service;
 
+import com.sky.dto.OrdersPaymentDTO;
 import com.sky.dto.OrdersSubmitDTO;
+import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderSubmitVO;
 
 public interface OrdersService {
@@ -11,4 +13,17 @@ public interface OrdersService {
      * @return 订单信息回执
      */
     OrderSubmitVO submitOrder(OrdersSubmitDTO ordersSubmitDTO);
+
+    /**
+     * 订单支付
+     * @param ordersPaymentDTO 订单支付信息封装
+     * @return 支付单信息返回
+     */
+    OrderPaymentVO payment(OrdersPaymentDTO ordersPaymentDTO) throws Exception;
+
+    /**
+     * 支付成功，修改订单状态
+     * @param outTradeNo 订单号
+     */
+    void paySuccess(String outTradeNo);
 }

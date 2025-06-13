@@ -21,4 +21,12 @@ public interface UserMapper {
      * @param user 用户信息
      */
     void saveUserInfo(User user);
+
+    /**
+     * 根据ID查询用户信息
+     * @param id 用户ID
+     * @return 用户信息
+     */
+    @Select("select * from user where id = #{id}")
+    User getUserById(@Param("id") String id);
 }

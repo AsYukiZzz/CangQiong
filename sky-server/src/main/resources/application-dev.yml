@@ -11,3 +11,14 @@ sky:
     host: localhost
     port: 6379
     database: 10
+
+  wechat:
+    appid:
+    secret:
+    mchid:
+    mch-serial-no:
+    api-v3-key:
+    notify-url:
+    refund-notify-url:
+    private-key-file-path:
+    we-chat-pay-cert-file-path:
