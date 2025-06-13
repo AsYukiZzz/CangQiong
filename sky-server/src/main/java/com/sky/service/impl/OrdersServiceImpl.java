@@ -1,8 +1,11 @@
 package com.sky.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.sky.constant.MessageConstant;
 import com.sky.context.CurrentHolder;
+import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersPaymentDTO;
 import com.sky.dto.OrdersSubmitDTO;
 import com.sky.entity.*;
@@ -10,10 +13,12 @@ import com.sky.exception.AddressBookBusinessException;
 import com.sky.exception.OrderBusinessException;
 import com.sky.exception.ShoppingCartBusinessException;
 import com.sky.mapper.*;
+import com.sky.result.PageResult;
 import com.sky.service.OrdersService;
 import com.sky.utils.WeChatPayUtil;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderSubmitVO;
+import com.sky.vo.OrderVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -165,5 +170,32 @@ public class OrdersServiceImpl implements OrdersService {
                 .build();
 
         ordersMapper.update(orders);
+    }
+
+    /**
+     * 分页查询历史订单
+     * @param ordersPageQueryDTO 分页查询条件封装
+     * @return 分页查询结果
+     */
+    @Override
+    public PageResult getHistoryOrders(OrdersPageQueryDTO ordersPageQueryDTO) {
+        //设置用户ID
+        ordersPageQueryDTO.setUserId(CurrentHolder.getCurrentHolder());
+
+        //执行分页查询
+        PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
+        OrderVO orderVO = new OrderVO();
+        List<OrderVO> orderVOList = ordersMapper.getOrders(ordersPageQueryDTO);
+
+        //将orderList向下转型为PageInfo
+        PageInfo<OrderVO> pageInfo = new PageInfo<>(orderVOList);
+
+        for (OrderVO o : orderVOList) {
+            Long orderId = o.getId();
+            List<OrderDetail> orderDetailList = orderDetailMapper.getOrderDetailByOrderId(orderId);
+            orderVO.setOrderDetailList(orderDetailList);
+        }
+
+        return new PageResult(pageInfo.getTotal(),pageInfo.getList());
     }
 }
