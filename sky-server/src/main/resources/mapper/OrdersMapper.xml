@@ -42,6 +42,14 @@
         where id = #{id}
     </update>
 
+    <update id="updateOrders">
+        update orders
+        <set>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        where id = #{id}
+    </update>
+
     <select id="getOrders" resultType="com.sky.vo.OrderVO">
         select id, number, status, user_id, address_book_id, order_time, checkout_time, pay_method, pay_status, amount,
         remark, phone, address, user_name, consignee, cancel_reason, rejection_reason, cancel_time,

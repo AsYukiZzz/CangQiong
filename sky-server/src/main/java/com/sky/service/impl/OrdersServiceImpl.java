@@ -5,10 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.sky.constant.MessageConstant;
 import com.sky.context.CurrentHolder;
-import com.sky.dto.OrderStatusCountModel;
-import com.sky.dto.OrdersPageQueryDTO;
-import com.sky.dto.OrdersPaymentDTO;
-import com.sky.dto.OrdersSubmitDTO;
+import com.sky.dto.*;
 import com.sky.entity.*;
 import com.sky.exception.AddressBookBusinessException;
 import com.sky.exception.OrderBusinessException;
@@ -259,6 +256,29 @@ public class OrdersServiceImpl implements OrdersService {
         orderVO.setOrderDetailList(orderDetailMapper.getOrderDetailByOrderId(Long.valueOf(id)));
 
         return orderVO;
+    }
+
+    /**
+     * 管理端接单
+     *
+     * @param ordersConfirmDTO 订单Id封装
+     */
+    @Override
+    public void takeOrder(OrdersConfirmDTO ordersConfirmDTO) {
+        //查询原订单信息进行校验
+        OrderVO order = ordersMapper.getOrderById(String.valueOf(ordersConfirmDTO.getId()));
+
+        if (order == null) {
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
+
+        if (!order.getStatus().equals(Orders.TO_BE_CONFIRMED)) {
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
+        //更改订单状态
+        order.setStatus(Orders.CONFIRMED);
+        ordersMapper.updateOrders(order);
     }
 
 }
