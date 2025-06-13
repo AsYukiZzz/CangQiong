@@ -35,4 +35,11 @@ public interface OrdersService {
      * @return 分页查询结果
      */
     PageResult getHistoryOrders(OrdersPageQueryDTO ordersPageQueryDTO);
+
+    /**
+     * 管理端分页查询订单
+     * @param ordersPageQueryDTO 分页查询条件
+     * @return 符合条件订单集合
+     */
+    PageResult listOrdersForManagement(OrdersPageQueryDTO ordersPageQueryDTO);
 }

@@ -47,6 +47,7 @@ public class OrdersServiceImpl implements OrdersService {
 
     /**
      * 提交订单
+     *
      * @param ordersSubmitDTO 订单信息封装
      * @return 订单信息回执
      */
@@ -87,7 +88,7 @@ public class OrdersServiceImpl implements OrdersService {
                 .build();
 
         //将OrderDTO封装的部分数据拷贝到order中
-        BeanUtils.copyProperties(ordersSubmitDTO,order);
+        BeanUtils.copyProperties(ordersSubmitDTO, order);
 
         //提交订单数据到数据库
         ordersMapper.submitOrder(order);
@@ -101,7 +102,7 @@ public class OrdersServiceImpl implements OrdersService {
         for (ShoppingCart shoppingCart : shoppingCarts) {
             //封装单个OrderDetail对象
             OrderDetail orderDetail = new OrderDetail();
-            BeanUtils.copyProperties(shoppingCart,orderDetail);
+            BeanUtils.copyProperties(shoppingCart, orderDetail);
             orderDetail.setOrderId(orderId);
             //添加到集合中
             orderDetails.add(orderDetail);
@@ -174,6 +175,7 @@ public class OrdersServiceImpl implements OrdersService {
 
     /**
      * 分页查询历史订单
+     *
      * @param ordersPageQueryDTO 分页查询条件封装
      * @return 分页查询结果
      */
@@ -196,6 +198,24 @@ public class OrdersServiceImpl implements OrdersService {
             orderVO.setOrderDetailList(orderDetailList);
         }
 
-        return new PageResult(pageInfo.getTotal(),pageInfo.getList());
+        return new PageResult(pageInfo.getTotal(), pageInfo.getList());
     }
+
+    /**
+     * 管理端分页查询订单
+     * @param ordersPageQueryDTO 分页查询条件
+     * @return 符合条件订单集合
+     */
+    @Override
+    public PageResult listOrdersForManagement(OrdersPageQueryDTO ordersPageQueryDTO) {
+
+        //执行分页查询
+        PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
+        List<OrderVO> ordersList = ordersMapper.getOrders(ordersPageQueryDTO);
+
+        //获取记录数与集合并返回
+        PageInfo<OrderVO> pageInfo = new PageInfo<>(ordersList);
+        return new PageResult(pageInfo.getTotal(), pageInfo.getList());
+    }
+
 }
