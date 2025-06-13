@@ -7,6 +7,7 @@ import com.sky.result.PageResult;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
+import com.sky.vo.OrderVO;
 
 public interface OrdersService {
 
@@ -55,4 +56,12 @@ public interface OrdersService {
      * @return 统计结果
      */
     OrderStatisticsVO countOrdersByStatus();
+
+    /**
+     * 管理端根据订单Id查询订单信息
+     *
+     * @param id 订单Id
+     * @return 订单信息
+     */
+    OrderVO getOrderById(String id);
 }

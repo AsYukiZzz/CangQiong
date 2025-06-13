@@ -244,4 +244,21 @@ public class OrdersServiceImpl implements OrdersService {
         return statisticsVO;
     }
 
+    /**
+     * 管理端根据订单Id查询订单信息
+     *
+     * @param id 订单Id
+     * @return 订单信息
+     */
+    @Override
+    public OrderVO getOrderById(String id) {
+        //根据订单ID查询订单内容
+        OrderVO orderVO = ordersMapper.getOrderById(id);
+
+        //查询订单细节信息
+        orderVO.setOrderDetailList(orderDetailMapper.getOrderDetailByOrderId(Long.valueOf(id)));
+
+        return orderVO;
+    }
+
 }
