@@ -9,6 +9,7 @@ import com.sky.result.Result;
 import com.sky.service.OrdersService;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderSubmitVO;
+import com.sky.vo.OrderVO;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +55,7 @@ public class OrdersController {
 
     /**
      * 分页查询历史订单
+     *
      * @param ordersPageQueryDTO 分页查询条件封装
      * @return 分页查询结果
      */
@@ -61,5 +63,17 @@ public class OrdersController {
     public Result<PageResult> getHistoryOrders(OrdersPageQueryDTO ordersPageQueryDTO) {
         log.info("用户id={}，请求查询历史订单，{}", CurrentHolder.getCurrentHolder(), ordersPageQueryDTO);
         return Result.success(ordersService.getHistoryOrders(ordersPageQueryDTO));
+    }
+
+    /**
+     * 用户端端根据订单Id查询订单信息
+     *
+     * @param id 订单Id
+     * @return 订单信息
+     */
+    @GetMapping("/details/{id}")
+    public Result<OrderVO> getOrderById(@PathVariable String id) {
+        log.info("用户端查询订单详情，订单id={}", id);
+        return Result.success(ordersService.getOrderById(id));
     }
 }
