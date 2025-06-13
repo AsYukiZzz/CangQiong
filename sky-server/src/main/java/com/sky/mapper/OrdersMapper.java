@@ -1,5 +1,6 @@
 package com.sky.mapper;
 
+import com.sky.dto.OrderStatusCountModel;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.entity.Orders;
 import com.sky.vo.OrderVO;
@@ -8,17 +9,20 @@ import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
+
 @Mapper
 public interface OrdersMapper {
 
     /**
      * 提交订单
+     *
      * @param order 订单信息封装
      */
     void submitOrder(Orders order);
 
     /**
      * 根据订单号查询订单
+     *
      * @param orderNumber 订单号
      */
     @Select("select * from orders where number = #{orderNumber}")
@@ -26,14 +30,24 @@ public interface OrdersMapper {
 
     /**
      * 修改订单信息
+     *
      * @param orders 订单信息封装
      */
     void update(Orders orders);
 
     /**
      * 根据条件查询订单信息
+     *
      * @param ordersPageQueryDTO 查询条件封装
      * @return 查询结果
      */
     List<OrderVO> getOrders(OrdersPageQueryDTO ordersPageQueryDTO);
+
+    /**
+     * 管理端统计各状态订单数量
+     *
+     * @return 统计结果
+     */
+    @Select("select status,count(*) count from orders group by status")
+    List<OrderStatusCountModel> countOrderByStatus();
 }

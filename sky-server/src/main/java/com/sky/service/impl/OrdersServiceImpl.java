@@ -5,6 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.sky.constant.MessageConstant;
 import com.sky.context.CurrentHolder;
+import com.sky.dto.OrderStatusCountModel;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersPaymentDTO;
 import com.sky.dto.OrdersSubmitDTO;
@@ -17,6 +18,7 @@ import com.sky.result.PageResult;
 import com.sky.service.OrdersService;
 import com.sky.utils.WeChatPayUtil;
 import com.sky.vo.OrderPaymentVO;
+import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
 import org.springframework.beans.BeanUtils;
@@ -203,6 +205,7 @@ public class OrdersServiceImpl implements OrdersService {
 
     /**
      * 管理端分页查询订单
+     *
      * @param ordersPageQueryDTO 分页查询条件
      * @return 符合条件订单集合
      */
@@ -216,6 +219,29 @@ public class OrdersServiceImpl implements OrdersService {
         //获取记录数与集合并返回
         PageInfo<OrderVO> pageInfo = new PageInfo<>(ordersList);
         return new PageResult(pageInfo.getTotal(), pageInfo.getList());
+    }
+
+    /**
+     * 管理端统计各状态订单数量
+     *
+     * @return 统计结果
+     */
+    @Override
+    public OrderStatisticsVO countOrdersByStatus() {
+        List<OrderStatusCountModel> countList = ordersMapper.countOrderByStatus();
+        OrderStatisticsVO statisticsVO = new OrderStatisticsVO();
+
+        for (OrderStatusCountModel model : countList) {
+            if (model.getStatus().equals(Orders.CONFIRMED)) {
+                statisticsVO.setConfirmed(model.getCount());
+            } else if (model.getStatus().equals(Orders.TO_BE_CONFIRMED)) {
+                statisticsVO.setToBeConfirmed(model.getCount());
+            } else if (model.getStatus().equals(Orders.DELIVERY_IN_PROGRESS)) {
+                statisticsVO.setDeliveryInProgress(model.getCount());
+            }
+        }
+
+        return statisticsVO;
     }
 
 }
