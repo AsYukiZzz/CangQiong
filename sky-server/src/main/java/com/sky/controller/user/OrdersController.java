@@ -1,6 +1,7 @@
 package com.sky.controller.user;
 
 import com.sky.context.CurrentHolder;
+import com.sky.dto.OrdersCancelDTO;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersPaymentDTO;
 import com.sky.dto.OrdersSubmitDTO;
@@ -75,5 +76,18 @@ public class OrdersController {
     public Result<OrderVO> getOrderById(@PathVariable String id) {
         log.info("用户端查询订单详情，订单id={}", id);
         return Result.success(ordersService.getOrderById(id));
+    }
+
+    /**
+     * 用户端取消订单
+     *
+     * @param ordersCancelDTO 取消订单信息封装
+     * @return 成功取消订单结果返回
+     */
+    @PutMapping("/cancel/{id}")
+    public Result<String> cancelOrder(OrdersCancelDTO ordersCancelDTO) {
+        log.info("用户取消订单，订单id={}", ordersCancelDTO.getId());
+        ordersService.cancelOrder(ordersCancelDTO);
+        return Result.success();
     }
 }
