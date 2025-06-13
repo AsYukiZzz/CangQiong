@@ -318,6 +318,30 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     /**
+     * 派送订单
+     *
+     * @param id 订单Id
+     */
+    @Override
+    public void deliveryOrder(String id) {
+        //查询原订单信息以进行校验
+        OrderVO order = ordersMapper.getOrderById(id);
+
+        //校验订单状态
+        verifyOrder(order, Orders.CONFIRMED);
+
+        //校验是否到达配送时间
+        //todo 接入导航SDK后应计算具体送达时间再行比较？是否应该存在这个校验项目？
+        if (order.getDeliveryStatus() == 0 && order.getEstimatedDeliveryTime().minusMinutes(15).isAfter(LocalDateTime.now())){
+            throw new OrderBusinessException(MessageConstant.DELIVERY_TIME_TOO_EARLY);
+        }
+
+        //更改订单信息
+        order.setStatus(Orders.DELIVERY_IN_PROGRESS);
+        ordersMapper.updateOrders(order);
+    }
+
+    /**
      * 校验订单状态
      *
      * @param order             订单

@@ -29,6 +29,7 @@ public class OrderController {
      */
     @GetMapping("/conditionSearch")
     public Result<PageResult> listOrdersForManagement(OrdersPageQueryDTO ordersPageQueryDTO) {
+        //todo 待派送订单菜品不显示
         log.info("管理端分页查询订单，{}", ordersPageQueryDTO);
         return Result.success(ordersService.listOrdersForManagement(ordersPageQueryDTO));
     }
@@ -92,6 +93,19 @@ public class OrderController {
     public Result<String> cancelOrder(@RequestBody OrdersCancelDTO ordersCancelDTO) {
         log.info("管理端取消订单，订单id={}", ordersCancelDTO.getId());
         ordersService.cancelOrder(ordersCancelDTO);
+        return Result.success();
+    }
+
+    /**
+     * 派送订单
+     *
+     * @param id 订单Id
+     * @return 成功开始派送结果返回
+     */
+    @PutMapping("/delivery/{id}")
+    public Result<String> deliveryOrder(@PathVariable String id) {
+        log.info("订单开始派送，订单id={}", id);
+        ordersService.deliveryOrder(id);
         return Result.success();
     }
 }

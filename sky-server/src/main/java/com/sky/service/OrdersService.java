@@ -83,4 +83,11 @@ public interface OrdersService {
      * @param ordersCancelDTO 取消订单信息封装
      */
     void cancelOrder(OrdersCancelDTO ordersCancelDTO);
+
+    /**
+     * 派送订单
+     *
+     * @param id 订单Id
+     */
+    void deliveryOrder(String id);
 }
