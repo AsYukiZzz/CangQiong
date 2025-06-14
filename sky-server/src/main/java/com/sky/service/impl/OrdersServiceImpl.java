@@ -342,6 +342,25 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     /**
+     * 完成订单
+     *
+     * @param id 订单Id
+     */
+    @Override
+    public void completeOrder(String id) {
+        //查询原订单信息以进行校验
+        OrderVO order = ordersMapper.getOrderById(id);
+
+        //校验订单状态
+        verifyOrder(order, Orders.DELIVERY_IN_PROGRESS);
+
+        //更改订单信息
+        order.setStatus(Orders.COMPLETED);
+        order.setDeliveryTime(LocalDateTime.now());
+        ordersMapper.updateOrders(order);
+    }
+
+    /**
      * 校验订单状态
      *
      * @param order             订单

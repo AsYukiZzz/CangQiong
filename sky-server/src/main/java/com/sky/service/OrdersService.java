@@ -90,4 +90,11 @@ public interface OrdersService {
      * @param id 订单Id
      */
     void deliveryOrder(String id);
+
+    /**
+     * 完成订单
+     *
+     * @param id 订单Id
+     */
+    void completeOrder(String id);
 }
