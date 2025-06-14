@@ -235,11 +235,11 @@ public class OrdersServiceImpl implements OrdersService {
         OrderStatisticsVO statisticsVO = new OrderStatisticsVO();
 
         for (OrderStatusCountModel model : countList) {
-            if (model.getStatus().equals(Orders.CONFIRMED)) {
+            if (model.getStatus() == Orders.CONFIRMED) {
                 statisticsVO.setConfirmed(model.getCount());
-            } else if (model.getStatus().equals(Orders.TO_BE_CONFIRMED)) {
+            } else if (model.getStatus() == Orders.TO_BE_CONFIRMED) {
                 statisticsVO.setToBeConfirmed(model.getCount());
-            } else if (model.getStatus().equals(Orders.DELIVERY_IN_PROGRESS)) {
+            } else if (model.getStatus() == Orders.DELIVERY_IN_PROGRESS) {
                 statisticsVO.setDeliveryInProgress(model.getCount());
             }
         }

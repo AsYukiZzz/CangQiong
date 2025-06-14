@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderStatusCountModel {
-    private Integer status;
-    private Integer count;
+    private int status;
+    private int count;
 
 }
