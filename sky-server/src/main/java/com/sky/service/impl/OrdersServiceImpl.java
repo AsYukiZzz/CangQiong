@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 @Slf4j
@@ -248,7 +249,7 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     /**
-     * 管理端根据订单Id查询订单信息
+     * 根据订单Id查询订单信息（管理端、用户端）
      *
      * @param id 订单Id
      * @return 订单信息
@@ -309,7 +310,6 @@ public class OrdersServiceImpl implements OrdersService {
         }
 
         //更改订单信息
-        //todo 拒单与取消订单区别？是否需要与拒绝原因也进行校验？
         order.setStatus(Orders.CANCELLED);
         order.setCancelTime(LocalDateTime.now());
         order.setRejectionReason(ordersRejectionDTO.getRejectionReason());
@@ -419,35 +419,22 @@ public class OrdersServiceImpl implements OrdersService {
         //校验订单状态
         verifyOrder(order, Orders.COMPLETED);
 
-        //克隆订单信息
-        Orders insertOrder = new Orders();
-        BeanUtils.copyProperties(order, insertOrder);
+        //生成创建时间
+        LocalDateTime createTime = LocalDateTime.now();
 
-        //获取当前时间、生成订单号
-        LocalDateTime now = LocalDateTime.now();
-        String orderNumber = String.valueOf(System.currentTimeMillis());
+        //声明购物车集合
+        List<ShoppingCart> shoppingCartList = new LinkedList<>();
 
-        order.setId(null);
-        order.setStatus(Orders.PENDING_PAYMENT);
-        order.setOrderTime(now);
-        order.setPayStatus(Orders.UN_PAID);
-        order.setNumber(orderNumber);
+        //添加购物车对象
+        order.getOrderDetailList().forEach(orderDetail -> {
+            ShoppingCart shoppingCart = new ShoppingCart();
+            BeanUtils.copyProperties(orderDetail, shoppingCart);
+            shoppingCart.setCreateTime(createTime);
+            shoppingCartList.add(shoppingCart);
+        });
 
-        //提交订单数据到数据库
-        ordersMapper.submitOrder(order);
-
-        //获取订单ID
-        Long orderId = order.getId();
-
-        //获取原订单细节信息
-        List<OrderDetail> orderDetailList = orderDetailMapper.getOrderDetailByOrderId(Long.valueOf(id));
-
-        //设置为新订单Id
-        orderDetailList.forEach(orderDetail -> orderDetail.setOrderId(orderId));
-
-        //批量添加到数据库
-        orderDetailMapper.addOrderDetail(orderDetailList);
-
+        //批量添加到购物车数据库中
+        shoppingCartMapper.addItemBatch(shoppingCartList);
     }
 
     /**

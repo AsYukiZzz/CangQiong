@@ -16,6 +16,13 @@ public interface ShoppingCartMapper {
     void addItem(ShoppingCart shoppingCart);
 
     /**
+     * 向购物车批量添加物品（同用户同物品第一次添加）
+     *
+     * @param shoppingCartList 购物车物品集合
+     */
+    void addItemBatch(List<ShoppingCart> shoppingCartList);
+
+    /**
      * 根据条件信息搜索购物车物品
      *
      * @param shoppingCart 条件信息封装
@@ -36,4 +43,5 @@ public interface ShoppingCartMapper {
      * @param shoppingCart 条件封装
      */
     void deleteItem(ShoppingCart shoppingCart);
+
 }
