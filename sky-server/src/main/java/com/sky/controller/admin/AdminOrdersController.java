@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequestMapping("/admin/order")
-public class OrdersController {
+public class AdminOrdersController {
 
     @Autowired
     private OrdersService ordersService;
@@ -77,7 +77,7 @@ public class OrdersController {
      * @return 成功拒单结果返回
      */
     @PutMapping("/rejection")
-    public Result<String> rejectOrder(@RequestBody OrdersRejectionDTO ordersRejectionDTO) {
+    public Result<String> rejectOrder(@RequestBody OrdersRejectionDTO ordersRejectionDTO) throws Exception {
         log.info("管理端拒单，订单id={}", ordersRejectionDTO.getId());
         ordersService.rejectOrder(ordersRejectionDTO);
         return Result.success();
@@ -90,7 +90,7 @@ public class OrdersController {
      * @return 成功取消订单结果返回
      */
     @PutMapping("/cancel")
-    public Result<String> cancelOrder(@RequestBody OrdersCancelDTO ordersCancelDTO) {
+    public Result<String> cancelOrder(@RequestBody OrdersCancelDTO ordersCancelDTO) throws Exception {
         log.info("管理端取消订单，订单id={}", ordersCancelDTO.getId());
         ordersService.cancelOrder(ordersCancelDTO);
         return Result.success();

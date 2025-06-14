@@ -1,6 +1,6 @@
 package com.sky.controller.user;
 
-import com.sky.context.CurrentHolder;
+import com.sky.context.CurrentHolderInfo;
 import com.sky.dto.OrdersCancelDTO;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersPaymentDTO;
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequestMapping("/user/order")
-public class OrdersController {
+public class UserOrdersController {
 
     @Autowired
     private OrdersService ordersService;
@@ -62,7 +62,7 @@ public class OrdersController {
      */
     @GetMapping("/historyOrders")
     public Result<PageResult> getHistoryOrders(OrdersPageQueryDTO ordersPageQueryDTO) {
-        log.info("用户id={}，请求查询历史订单，{}", CurrentHolder.getCurrentHolder(), ordersPageQueryDTO);
+        log.info("用户id={}，请求查询历史订单，{}", CurrentHolderInfo.getCurrentHolder(), ordersPageQueryDTO);
         return Result.success(ordersService.getHistoryOrders(ordersPageQueryDTO));
     }
 
@@ -85,8 +85,9 @@ public class OrdersController {
      * @return 成功取消订单结果返回
      */
     @PutMapping("/cancel/{id}")
-    public Result<String> cancelOrder(OrdersCancelDTO ordersCancelDTO) {
+    public Result<String> cancelOrder(OrdersCancelDTO ordersCancelDTO) throws Exception {
         log.info("用户取消订单，订单id={}", ordersCancelDTO.getId());
+        ordersCancelDTO.setCancelReason("用户取消");
         ordersService.cancelOrder(ordersCancelDTO);
         return Result.success();
     }
@@ -99,7 +100,7 @@ public class OrdersController {
      */
     @PostMapping("/repetition/{id}")
     public Result<String> repetitionOrder(@PathVariable String id) {
-        log.info("用户端再来一单，用户id={}，订单id={}", CurrentHolder.getCurrentHolder(), id);
+        log.info("用户端再来一单，用户id={}，订单id={}", CurrentHolderInfo.getCurrentHolder(), id);
         ordersService.repetitionOrder(id);
         return Result.success();
     }

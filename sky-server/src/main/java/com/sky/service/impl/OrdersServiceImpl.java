@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.sky.constant.MessageConstant;
-import com.sky.context.CurrentHolder;
+import com.sky.context.CurrentHolderInfo;
 import com.sky.dto.*;
 import com.sky.entity.*;
 import com.sky.exception.AddressBookBusinessException;
@@ -18,8 +18,10 @@ import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +30,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 public class OrdersServiceImpl implements OrdersService {
 
@@ -41,7 +44,10 @@ public class OrdersServiceImpl implements OrdersService {
     private OrderDetailMapper orderDetailMapper;
     @Autowired
     private UserMapper userMapper;
+
     @Autowired
+    @Qualifier("weChatPayUtilFakeImpl")
+    //注意，由于不存在商户号无法完成微信支付真是功能，此处注入了假微信支付实现以测试，可以通过改变注入Bean类型换为真正实现
     private WeChatPayUtil weChatPayUtil;
 
     /**
@@ -55,7 +61,7 @@ public class OrdersServiceImpl implements OrdersService {
     public OrderSubmitVO submitOrder(OrdersSubmitDTO ordersSubmitDTO) {
 
         //获取当前用户ID
-        Long userId = CurrentHolder.getCurrentHolder();
+        Long userId = CurrentHolderInfo.getCurrentHolder();
         //获取当前时间
         LocalDateTime now = LocalDateTime.now();
         //生成订单号
@@ -130,7 +136,7 @@ public class OrdersServiceImpl implements OrdersService {
      */
     public OrderPaymentVO payment(OrdersPaymentDTO ordersPaymentDTO) throws Exception {
         // 当前登录用户id
-        Long userId = CurrentHolder.getCurrentHolder();
+        Long userId = CurrentHolderInfo.getCurrentHolder();
         User user = userMapper.getUserById(String.valueOf(userId));
 
         //调用微信支付接口，生成预支付交易单
@@ -181,7 +187,7 @@ public class OrdersServiceImpl implements OrdersService {
     @Override
     public PageResult getHistoryOrders(OrdersPageQueryDTO ordersPageQueryDTO) {
         //设置用户ID
-        ordersPageQueryDTO.setUserId(CurrentHolder.getCurrentHolder());
+        ordersPageQueryDTO.setUserId(CurrentHolderInfo.getCurrentHolder());
 
         //执行分页查询
         PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
@@ -282,12 +288,25 @@ public class OrdersServiceImpl implements OrdersService {
      * @param ordersRejectionDTO 拒单信息封装
      */
     @Override
-    public void rejectOrder(OrdersRejectionDTO ordersRejectionDTO) {
+    public void rejectOrder(OrdersRejectionDTO ordersRejectionDTO) throws Exception {
         //查询原订单信息以进行校验
         OrderVO order = ordersMapper.getOrderById(String.valueOf(ordersRejectionDTO.getId()));
 
         //校验订单状态
         verifyOrder(order, Orders.TO_BE_CONFIRMED);
+
+        //用户已支付情况下进行退款
+        if (order.getPayStatus().equals(Orders.PAID)) {
+            String refund = weChatPayUtil.refund(
+                    order.getNumber(),
+                    order.getNumber(),
+                    new BigDecimal(0.01),
+                    new BigDecimal(0.01));
+            log.info("申请退款：{}", refund);
+
+            //付款状态设置为已退款
+            order.setPayStatus(Orders.REFUND);
+        }
 
         //更改订单信息
         //todo 拒单与取消订单区别？是否需要与拒绝原因也进行校验？
@@ -298,17 +317,44 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     /**
-     * 管理端取消订单
+     * 取消订单（管理端、用户端）
      *
      * @param ordersCancelDTO 取消订单信息封装
      */
     @Override
-    public void cancelOrder(OrdersCancelDTO ordersCancelDTO) {
+    public void cancelOrder(OrdersCancelDTO ordersCancelDTO) throws Exception {
         //查询原订单信息以进行校验
         OrderVO order = ordersMapper.getOrderById(String.valueOf(ordersCancelDTO.getId()));
 
         //校验订单状态
-        verifyOrder(order, Orders.CONFIRMED, Orders.DELIVERY_IN_PROGRESS, Orders.COMPLETED);
+        verifyOrder(order, Orders.TO_BE_CONFIRMED, Orders.CONFIRMED, Orders.DELIVERY_IN_PROGRESS, Orders.COMPLETED);
+
+        //获取请求发起端
+        Long ri = CurrentHolderInfo.getRequestInitiator();
+
+        //退款标识
+        boolean isRefundRequired = false;
+
+        //管理端取消订单：用户已支付就需要退款
+        if (ri.equals(CurrentHolderInfo.MANAGEMENT_SIDE) && order.getPayStatus().equals(Orders.PAID)) {
+            isRefundRequired = true;
+        }
+        //用户端取消订单：只在商家未接单时才可以退款，其他情况不进行退款
+        else if (ri.equals(CurrentHolderInfo.USER_SIDE) && order.getStatus().equals(Orders.TO_BE_CONFIRMED)) {
+            isRefundRequired = true;
+        }
+
+        if (isRefundRequired) {
+            String refund = weChatPayUtil.refund(
+                    order.getNumber(),
+                    order.getNumber(),
+                    new BigDecimal(0.01),
+                    new BigDecimal(0.01));
+            log.info("申请退款：{}", refund);
+
+            //付款状态设置为已退款
+            order.setPayStatus(Orders.REFUND);
+        }
 
         //更改订单信息
         order.setStatus(Orders.CANCELLED);
@@ -332,7 +378,7 @@ public class OrdersServiceImpl implements OrdersService {
 
         //校验是否到达配送时间
         //todo 接入导航SDK后应计算具体送达时间再行比较？是否应该存在这个校验项目？
-        if (order.getDeliveryStatus() == 0 && order.getEstimatedDeliveryTime().minusMinutes(15).isAfter(LocalDateTime.now())){
+        if (order.getDeliveryStatus() == 0 && order.getEstimatedDeliveryTime().minusMinutes(15).isAfter(LocalDateTime.now())) {
             throw new OrderBusinessException(MessageConstant.DELIVERY_TIME_TOO_EARLY);
         }
 

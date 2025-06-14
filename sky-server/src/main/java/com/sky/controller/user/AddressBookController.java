@@ -1,6 +1,6 @@
 package com.sky.controller.user;
 
-import com.sky.context.CurrentHolder;
+import com.sky.context.CurrentHolderInfo;
 import com.sky.entity.AddressBook;
 import com.sky.result.Result;
 import com.sky.service.AddressBookService;
@@ -25,7 +25,7 @@ public class AddressBookController {
      */
     @GetMapping("/list")
     public Result<List<AddressBook>> list() {
-        Long userId = CurrentHolder.getCurrentHolder();
+        Long userId = CurrentHolderInfo.getCurrentHolder();
         log.info("查询用户userID={}所有地址", userId);
         AddressBook addressBook = new AddressBook();
         addressBook.setUserId(userId);
@@ -80,7 +80,7 @@ public class AddressBookController {
      */
     @PutMapping("/default")
     public Result<String> setDefault(@RequestBody AddressBook addressBook) {
-        log.info("用户userId={}，设置默认地址：{}", CurrentHolder.getCurrentHolder(), addressBook);
+        log.info("用户userId={}，设置默认地址：{}", CurrentHolderInfo.getCurrentHolder(), addressBook);
         addressBookService.setDefault(addressBook);
         return Result.success();
     }
@@ -104,10 +104,10 @@ public class AddressBookController {
     @GetMapping("/default")
     public Result<AddressBook> getDefault() {
 
-        log.info("查询用户默认地址，userId={}", CurrentHolder.getCurrentHolder());
+        log.info("查询用户默认地址，userId={}", CurrentHolderInfo.getCurrentHolder());
         AddressBook addressBook = new AddressBook();
         addressBook.setIsDefault(1);
-        addressBook.setUserId(CurrentHolder.getCurrentHolder());
+        addressBook.setUserId(CurrentHolderInfo.getCurrentHolder());
         List<AddressBook> list = addressBookService.list(addressBook);
 
         if (list != null && list.size() == 1) {

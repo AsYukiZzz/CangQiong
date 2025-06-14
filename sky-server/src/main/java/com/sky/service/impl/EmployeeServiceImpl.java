@@ -15,14 +15,12 @@ import com.sky.exception.PasswordErrorException;
 import com.sky.mapper.EmployeeMapper;
 import com.sky.result.PageResult;
 import com.sky.service.EmployeeService;
-import com.sky.context.CurrentHolder;
+import com.sky.context.CurrentHolderInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -170,7 +168,7 @@ public class EmployeeServiceImpl implements EmployeeService {
      * @return 返回操作账户ID
      */
     private Long getCurrentHolder() {
-        return CurrentHolder.getCurrentHolder();
+        return CurrentHolderInfo.getCurrentHolder();
     }
 
 }

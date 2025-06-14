@@ -2,7 +2,7 @@ package com.sky.interceptor;
 
 import com.sky.constant.JwtClaimsConstant;
 import com.sky.properties.JwtProperties;
-import com.sky.context.CurrentHolder;
+import com.sky.context.CurrentHolderInfo;
 import com.sky.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -26,9 +27,9 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
     /**
      * 管理端请求拦截：JWT校验
      *
-     * @param request 请求体对象
+     * @param request  请求体对象
      * @param response 响应体对象
-     * @param handler 被拦截的对象
+     * @param handler  被拦截的对象
      * @return 布尔值，为true时放行请求
      * @throws Exception 可能出现的异常
      */
@@ -48,7 +49,7 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
             Claims claims = JwtUtil.parseJWT(jwtProperties.getAdminSecretKey(), token);
             Long empId = Long.valueOf(claims.get(JwtClaimsConstant.EMP_ID).toString());
             log.info("当前员工id：{}", empId);
-            CurrentHolder.setCurrentHolder(empId);
+            CurrentHolderInfo.setCurrentHolder(empId, CurrentHolderInfo.MANAGEMENT_SIDE);
             //3、通过，放行
             return true;
         } catch (Exception ex) {
@@ -67,6 +68,6 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
      */
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        CurrentHolder.removeCurrentHolder();
+        CurrentHolderInfo.removeCurrentHolder();
     }
 }

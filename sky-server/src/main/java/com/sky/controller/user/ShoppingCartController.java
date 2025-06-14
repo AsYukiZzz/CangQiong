@@ -1,6 +1,6 @@
 package com.sky.controller.user;
 
-import com.sky.context.CurrentHolder;
+import com.sky.context.CurrentHolderInfo;
 import com.sky.dto.ShoppingCartDTO;
 import com.sky.entity.ShoppingCart;
 import com.sky.result.Result;
@@ -42,7 +42,7 @@ public class ShoppingCartController {
      */
     @GetMapping("/list")
     public Result<List<ShoppingCart>> listItems() {
-        log.info("用户请求购物车内容，用户id={}", CurrentHolder.getCurrentHolder());
+        log.info("用户请求购物车内容，用户id={}", CurrentHolderInfo.getCurrentHolder());
         return Result.success(shoppingCartService.listItem());
     }
 
@@ -53,7 +53,7 @@ public class ShoppingCartController {
      */
     @DeleteMapping("/clean")
     public Result<String> ClearItem() {
-        log.info("用户清空购物车内容，用户id={}", CurrentHolder.getCurrentHolder());
+        log.info("用户清空购物车内容，用户id={}", CurrentHolderInfo.getCurrentHolder());
         shoppingCartService.clearItem();
         return Result.success();
     }

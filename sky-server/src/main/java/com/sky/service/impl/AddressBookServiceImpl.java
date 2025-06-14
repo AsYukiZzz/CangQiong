@@ -1,6 +1,6 @@
 package com.sky.service.impl;
 
-import com.sky.context.CurrentHolder;
+import com.sky.context.CurrentHolderInfo;
 import com.sky.entity.AddressBook;
 import com.sky.mapper.AddressBookMapper;
 import com.sky.service.AddressBookService;
@@ -33,7 +33,7 @@ public class AddressBookServiceImpl implements AddressBookService {
      * @param addressBook 地址信息封装
      */
     public void save(AddressBook addressBook) {
-        addressBook.setUserId(CurrentHolder.getCurrentHolder());
+        addressBook.setUserId(CurrentHolderInfo.getCurrentHolder());
         addressBook.setIsDefault(0);
         addressBookMapper.insert(addressBook);
     }
@@ -66,7 +66,7 @@ public class AddressBookServiceImpl implements AddressBookService {
     public void setDefault(AddressBook addressBook) {
         //1、将当前用户的所有地址修改为非默认地址 update address_book set is_default = ? where user_id = ?
         addressBook.setIsDefault(0);
-        addressBook.setUserId(CurrentHolder.getCurrentHolder());
+        addressBook.setUserId(CurrentHolderInfo.getCurrentHolder());
         addressBookMapper.updateIsDefaultByUserId(addressBook);
 
         //2、将当前地址改为默认地址 update address_book set is_default = ? where id = ?

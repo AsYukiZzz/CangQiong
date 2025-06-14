@@ -1,7 +1,7 @@
 package com.sky.aop;
 
 import com.sky.anno.Autofill;
-import com.sky.context.CurrentHolder;
+import com.sky.context.CurrentHolderInfo;
 import com.sky.enumeration.OperationType;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -45,7 +45,7 @@ public class CommonFieldsAutoFillAspect {
                 createUser.setAccessible(true);
                 //对字段进行赋值
                 createTime.set(arg, LocalDateTime.now());
-                createUser.set(arg, CurrentHolder.getCurrentHolder());
+                createUser.set(arg, CurrentHolderInfo.getCurrentHolder());
             case UPDATE:
                 //获取要进行自动填充的字段对象
                 Field updateTime = argClass.getDeclaredField("updateTime");
@@ -55,7 +55,7 @@ public class CommonFieldsAutoFillAspect {
                 updateUser.setAccessible(true);
                 //对字段进行赋值
                 updateTime.set(arg, LocalDateTime.now());
-                updateUser.set(arg, CurrentHolder.getCurrentHolder());
+                updateUser.set(arg, CurrentHolderInfo.getCurrentHolder());
                 break;
         }
     }

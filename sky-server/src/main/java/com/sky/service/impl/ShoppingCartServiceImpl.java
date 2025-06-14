@@ -1,6 +1,6 @@
 package com.sky.service.impl;
 
-import com.sky.context.CurrentHolder;
+import com.sky.context.CurrentHolderInfo;
 import com.sky.dto.ShoppingCartDTO;
 import com.sky.entity.ShoppingCart;
 import com.sky.mapper.DishMapper;
@@ -142,6 +142,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
      * @return 用户ID
      */
     private Long getCurrentHolder() {
-        return CurrentHolder.getCurrentHolder();
+        return CurrentHolderInfo.getCurrentHolder();
     }
 }
