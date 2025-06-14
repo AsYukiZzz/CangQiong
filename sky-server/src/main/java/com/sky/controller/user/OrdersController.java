@@ -90,4 +90,17 @@ public class OrdersController {
         ordersService.cancelOrder(ordersCancelDTO);
         return Result.success();
     }
+
+    /**
+     * 用户端再来一单
+     *
+     * @param id 订单Id
+     * @return 操作成功结果返回
+     */
+    @PostMapping("/repetition/{id}")
+    public Result<String> repetitionOrder(@PathVariable String id) {
+        log.info("用户端再来一单，用户id={}，订单id={}", CurrentHolder.getCurrentHolder(), id);
+        ordersService.repetitionOrder(id);
+        return Result.success();
+    }
 }

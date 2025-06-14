@@ -97,4 +97,11 @@ public interface OrdersService {
      * @param id 订单Id
      */
     void completeOrder(String id);
+
+    /**
+     * 用户端再来一单
+     *
+     * @param id 订单Id
+     */
+    void repetitionOrder(String id);
 }

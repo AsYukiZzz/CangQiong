@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequestMapping("/admin/order")
-public class OrderController {
+public class OrdersController {
 
     @Autowired
     private OrdersService ordersService;

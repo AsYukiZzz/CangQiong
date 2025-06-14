@@ -361,6 +361,50 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     /**
+     * 用户端再来一单
+     *
+     * @param id 订单Id
+     */
+    @Override
+    public void repetitionOrder(String id) {
+        //查询原订单信息以进行校验
+        OrderVO order = ordersMapper.getOrderById(id);
+
+        //校验订单状态
+        verifyOrder(order, Orders.COMPLETED);
+
+        //克隆订单信息
+        Orders insertOrder = new Orders();
+        BeanUtils.copyProperties(order, insertOrder);
+
+        //获取当前时间、生成订单号
+        LocalDateTime now = LocalDateTime.now();
+        String orderNumber = String.valueOf(System.currentTimeMillis());
+
+        order.setId(null);
+        order.setStatus(Orders.PENDING_PAYMENT);
+        order.setOrderTime(now);
+        order.setPayStatus(Orders.UN_PAID);
+        order.setNumber(orderNumber);
+
+        //提交订单数据到数据库
+        ordersMapper.submitOrder(order);
+
+        //获取订单ID
+        Long orderId = order.getId();
+
+        //获取原订单细节信息
+        List<OrderDetail> orderDetailList = orderDetailMapper.getOrderDetailByOrderId(Long.valueOf(id));
+
+        //设置为新订单Id
+        orderDetailList.forEach(orderDetail -> orderDetail.setOrderId(orderId));
+
+        //批量添加到数据库
+        orderDetailMapper.addOrderDetail(orderDetailList);
+
+    }
+
+    /**
      * 校验订单状态
      *
      * @param order             订单
