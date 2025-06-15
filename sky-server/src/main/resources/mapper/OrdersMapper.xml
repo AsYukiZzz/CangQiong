@@ -55,7 +55,7 @@
         where id = #{id}
     </update>
 
-    <select id="getOrders" resultType="com.sky.vo.OrderVO">
+    <select id="getOrdersByPage" resultType="com.sky.vo.OrderVO">
         select id, number, status, user_id, address_book_id, order_time, checkout_time, pay_method, pay_status, amount,
         remark, phone, address, user_name, consignee, cancel_reason, rejection_reason, cancel_time,
         estimated_delivery_time, delivery_status, delivery_time, pack_amount, tableware_number, tableware_status from
@@ -66,6 +66,20 @@
             <if test="phone != null">and phone = #{phone}</if>
             <if test="status != null">and status = #{status}</if>
             <if test="number != null">and number = #{number}</if>
+        </where>
+    </select>
+
+    <select id="getOrders" resultType="com.sky.vo.OrderVO">
+        select id, number, status, user_id, address_book_id, order_time, checkout_time, pay_method, pay_status, amount,
+        remark, phone, address, user_name, consignee, cancel_reason, rejection_reason, cancel_time,
+        estimated_delivery_time, delivery_status, delivery_time, pack_amount, tableware_number, tableware_status from
+        orders
+        <where>
+            <if test="userId != null">and user_id=#{userId}</if>
+            <if test="phone != null">and phone = #{phone}</if>
+            <if test="status != null">and status = #{status}</if>
+            <if test="number != null">and number = #{number}</if>
+            <if test="estimatedDeliveryTime != null">and estimated_delivery_time = #{estimatedDeliveryTime}</if>
         </where>
     </select>
 </mapper>

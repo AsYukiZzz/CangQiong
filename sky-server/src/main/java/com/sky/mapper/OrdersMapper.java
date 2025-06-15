@@ -42,7 +42,16 @@ public interface OrdersMapper {
      * @param ordersPageQueryDTO 查询条件封装
      * @return 查询结果
      */
-    List<OrderVO> getOrders(OrdersPageQueryDTO ordersPageQueryDTO);
+    List<OrderVO> getOrdersByPage(OrdersPageQueryDTO ordersPageQueryDTO);
+
+    /**
+     * 根据条件查询订单
+     *
+     * @param orders 查询条件封装
+     * @return 查询结果
+     */
+    List<OrderVO> getOrders(Orders orders);
+
 
     /**
      * 管理端统计各状态订单数量
@@ -53,7 +62,7 @@ public interface OrdersMapper {
     List<OrderStatusCountModel> countOrderByStatus();
 
     /**
-     * 管理端根据订单Id查询订单信息
+     * 根据订单Id查询订单信息
      *
      * @param id 订单Id
      * @return 订单信息

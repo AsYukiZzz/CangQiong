@@ -7,6 +7,8 @@ import com.sky.constant.MessageConstant;
 import com.sky.context.CurrentHolderInfo;
 import com.sky.dto.*;
 import com.sky.entity.*;
+import com.sky.event.OrderCreatedEvent;
+import com.sky.event.OrderPaidEvent;
 import com.sky.exception.AddressBookBusinessException;
 import com.sky.exception.OrderBusinessException;
 import com.sky.exception.ShoppingCartBusinessException;
@@ -22,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,6 +53,9 @@ public class OrdersServiceImpl implements OrdersService {
     @Qualifier("weChatPayUtilFakeImpl")
     //注意，由于不存在商户号无法完成微信支付真是功能，此处注入了假微信支付实现以测试，可以通过改变注入Bean类型换为真正实现
     private WeChatPayUtil weChatPayUtil;
+
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
 
     /**
      * 提交订单
@@ -120,6 +126,9 @@ public class OrdersServiceImpl implements OrdersService {
         //清空购物车
         shoppingCartMapper.deleteItem(condition);
 
+        //发布事件：并附加任务（15min内用户未付款取消订单）
+        applicationEventPublisher.publishEvent(new OrderCreatedEvent(this,orderId));
+
         //返回VO
         return OrderSubmitVO.builder()
                 .id(orderId)
@@ -176,6 +185,9 @@ public class OrdersServiceImpl implements OrdersService {
                 .checkoutTime(LocalDateTime.now())
                 .build();
 
+        //发布事件：订单被支付
+        applicationEventPublisher.publishEvent(new OrderPaidEvent(this,outTradeNo));
+
         ordersMapper.update(orders);
     }
 
@@ -193,7 +205,7 @@ public class OrdersServiceImpl implements OrdersService {
         //执行分页查询
         PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
         OrderVO orderVO = new OrderVO();
-        List<OrderVO> orderVOList = ordersMapper.getOrders(ordersPageQueryDTO);
+        List<OrderVO> orderVOList = ordersMapper.getOrdersByPage(ordersPageQueryDTO);
 
         //将orderList向下转型为PageInfo
         PageInfo<OrderVO> pageInfo = new PageInfo<>(orderVOList);
@@ -218,7 +230,7 @@ public class OrdersServiceImpl implements OrdersService {
 
         //执行分页查询
         PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
-        List<OrderVO> ordersList = ordersMapper.getOrders(ordersPageQueryDTO);
+        List<OrderVO> ordersList = ordersMapper.getOrdersByPage(ordersPageQueryDTO);
 
         //获取记录数与集合并返回
         PageInfo<OrderVO> pageInfo = new PageInfo<>(ordersList);
@@ -377,7 +389,7 @@ public class OrdersServiceImpl implements OrdersService {
         verifyOrder(order, Orders.CONFIRMED);
 
         //校验是否到达配送时间
-        //todo 接入导航SDK后应计算具体送达时间再行比较？是否应该存在这个校验项目？
+        //todo 接入百度导航SDK
         if (order.getDeliveryStatus() == 0 && order.getEstimatedDeliveryTime().minusMinutes(15).isAfter(LocalDateTime.now())) {
             throw new OrderBusinessException(MessageConstant.DELIVERY_TIME_TOO_EARLY);
         }
