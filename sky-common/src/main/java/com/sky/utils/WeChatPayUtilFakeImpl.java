@@ -9,7 +9,19 @@ import java.math.BigDecimal;
 public class WeChatPayUtilFakeImpl implements WeChatPayUtil {
     @Override
     public JSONObject pay(String orderNum, BigDecimal total, String description, String openid) throws Exception {
-        return null;
+
+        //生成假JsonObject
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("nonceStr", "abc");
+        jsonObject.put("paySign", "abc");
+        jsonObject.put("timeStamp", "abc");
+        jsonObject.put("signType", "abc");
+        jsonObject.put("packageStr", "abc");
+
+        //此处直接修改订单状态
+
+
+        return jsonObject;
     }
 
     @Override

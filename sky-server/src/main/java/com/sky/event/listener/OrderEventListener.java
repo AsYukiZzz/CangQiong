@@ -33,7 +33,6 @@ public class OrderEventListener {
     @EventListener
     public void execute(OrderCreatedEvent event) {
         Long orderId = event.getOrderId();
-        log.info("开始监听订单状态，订单Id={}",orderId);
         //添加定时15Min任务到ConcurrentMap中
         tasks.put(
                 orderId,
@@ -41,12 +40,12 @@ public class OrderEventListener {
                     () -> cancelUnPaidTimeOutOrder(orderId),
                     Instant.now().plusSeconds(900) // 15分钟后
         ));
+        log.info("开始监听订单状态，订单Id={}",orderId);
     }
 
     @EventListener
     public void execute(OrderPaidEvent event) {
         String orderNumber = event.getOrderNumber();
-        log.info("订单{}已付款，取消监听",orderNumber);
 
         //获取订单Id
         Long id = ordersMapper.getByNumber(orderNumber).getId();
@@ -59,6 +58,7 @@ public class OrderEventListener {
             //移除任务
             tasks.remove(id);
         }
+        log.info("订单{}已付款，取消监听",orderNumber);
     }
 
     /**

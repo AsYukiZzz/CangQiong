@@ -3,6 +3,7 @@ package com.sky.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.sky.anno.WeChatFakePay;
 import com.sky.constant.MessageConstant;
 import com.sky.context.CurrentHolderInfo;
 import com.sky.dto.*;
@@ -20,6 +21,7 @@ import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
+import com.sky.websocket.ManagementSideWebSocket;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,16 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+
+/**
+ * 此处为规避由于无商家号无法使用微信支付的影响（付款、付款回调、退款）,采取了以下措施: <br/>
+ * 1.付款与付款成功回调：使用AOP直接跳过执行payment方法，直接调用paySuccess方法模拟支付成功，若要测试待付款状态，注释pay方法的@WeChatFakePay注解即可<br/>
+ * 2.退款：创建了微信支付工具类接口，调用refund方法时直接调用虚假退款方法，模拟退款成功<br/>
+ * 若您有正常的商户号，可以测试微信支付功能，您只需要：<br/>
+ * 1.在配置类配置相关信息（商户号、appid等）<br/>
+ * 2.下方WeChatPayUtil的Bean配置改为WeChatPayUtilRealImpl<br/>
+ * 3.注释掉payment方法的@WeChatFakePay注解<br/>
+ */
 @Slf4j
 @Service
 public class OrdersServiceImpl implements OrdersService {
@@ -48,6 +60,8 @@ public class OrdersServiceImpl implements OrdersService {
     private OrderDetailMapper orderDetailMapper;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private ManagementSideWebSocket  managementSideWebSocket;
 
     @Autowired
     @Qualifier("weChatPayUtilFakeImpl")
@@ -144,6 +158,7 @@ public class OrdersServiceImpl implements OrdersService {
      * @param ordersPaymentDTO 支付单信息封装
      * @return 支付单信息返回
      */
+    @WeChatFakePay
     public OrderPaymentVO payment(OrdersPaymentDTO ordersPaymentDTO) throws Exception {
         // 当前登录用户id
         Long userId = CurrentHolderInfo.getCurrentHolder();
@@ -189,6 +204,14 @@ public class OrdersServiceImpl implements OrdersService {
         applicationEventPublisher.publishEvent(new OrderPaidEvent(this,outTradeNo));
 
         ordersMapper.update(orders);
+
+        //通知管理端来单
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("type", 1);
+        jsonObject.put("orderId", outTradeNo);
+        jsonObject.put("content", "新订单："+outTradeNo);
+
+        managementSideWebSocket.sendMessage2AllClient(jsonObject.toJSONString());
     }
 
     /**
