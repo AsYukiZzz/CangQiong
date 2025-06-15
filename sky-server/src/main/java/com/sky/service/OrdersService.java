@@ -104,4 +104,11 @@ public interface OrdersService {
      * @param id 订单Id
      */
     void repetitionOrder(String id);
+
+    /**
+     * 用户催单
+     *
+     * @param id 订单Id
+     */
+    void reminderOrder(String id);
 }

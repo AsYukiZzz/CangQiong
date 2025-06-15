@@ -61,7 +61,7 @@ public class OrdersServiceImpl implements OrdersService {
     @Autowired
     private UserMapper userMapper;
     @Autowired
-    private ManagementSideWebSocket  managementSideWebSocket;
+    private ManagementSideWebSocket managementSideWebSocket;
 
     @Autowired
     @Qualifier("weChatPayUtilFakeImpl")
@@ -141,7 +141,7 @@ public class OrdersServiceImpl implements OrdersService {
         shoppingCartMapper.deleteItem(condition);
 
         //发布事件：并附加任务（15min内用户未付款取消订单）
-        applicationEventPublisher.publishEvent(new OrderCreatedEvent(this,orderId));
+        applicationEventPublisher.publishEvent(new OrderCreatedEvent(this, orderId));
 
         //返回VO
         return OrderSubmitVO.builder()
@@ -201,17 +201,12 @@ public class OrdersServiceImpl implements OrdersService {
                 .build();
 
         //发布事件：订单被支付
-        applicationEventPublisher.publishEvent(new OrderPaidEvent(this,outTradeNo));
+        applicationEventPublisher.publishEvent(new OrderPaidEvent(this, outTradeNo));
 
         ordersMapper.update(orders);
 
-        //通知管理端来单
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("type", 1);
-        jsonObject.put("orderId", outTradeNo);
-        jsonObject.put("content", "新订单："+outTradeNo);
-
-        managementSideWebSocket.sendMessage2AllClient(jsonObject.toJSONString());
+        //向管理端发送通知：新订单
+        notificationManagementSide(1, outTradeNo, "新订单：" + outTradeNo);
     }
 
     /**
@@ -473,6 +468,25 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     /**
+     * 用户催单
+     *
+     * @param id 订单Id
+     */
+    @Override
+    public void reminderOrder(String id) {
+        //获取订单号
+        OrderVO order = ordersMapper.getOrderById(id);
+        if (order == null) {
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
+
+        String orderNumber = order.getNumber();
+
+        //向管理端发送催单通知
+        notificationManagementSide(2,orderNumber,"客户催单："+orderNumber);
+    }
+
+    /**
      * 校验订单状态
      *
      * @param order             订单
@@ -492,6 +506,22 @@ public class OrdersServiceImpl implements OrdersService {
         }
 
         throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+    }
+
+    /**
+     * 通过Websocket向管理端发送消息
+     * @param type 消息类型 1：新订单 2：客户催单
+     * @param outTradeNo 订单号
+     * @param content 消息内容
+     */
+    private void notificationManagementSide(int type, String outTradeNo, String content) {
+        //通知管理端来单
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("type", type);
+        jsonObject.put("orderId", outTradeNo);
+        jsonObject.put("content", content);
+
+        managementSideWebSocket.sendMessage2AllClient(jsonObject.toJSONString());
     }
 
 }

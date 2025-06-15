@@ -104,4 +104,17 @@ public class OrdersController {
         ordersService.repetitionOrder(id);
         return Result.success();
     }
+
+    /**
+     * 用户催单
+     *
+     * @param id 订单Id
+     * @return 成功催单返回
+     */
+    @GetMapping("/reminder/{id}")
+    public Result<String> reminderOrder(@PathVariable String id) {
+        log.info("用户催单，订单id={}", id);
+        ordersService.reminderOrder(id);
+        return Result.success();
+    }
 }
