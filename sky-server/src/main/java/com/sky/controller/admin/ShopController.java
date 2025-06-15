@@ -12,9 +12,9 @@ import java.util.Objects;
  * 店铺状态管理
  */
 @Slf4j
-@RestController
+@RestController("adminShopController")
 @RequestMapping("/admin/shop")
-public class AdminShopController {
+public class ShopController {
 
     @Autowired
     private RedisTemplate redisTemplate;

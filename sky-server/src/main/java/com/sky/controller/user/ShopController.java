@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
  * 店铺状态管理
  */
 @Slf4j
-@RestController
+@RestController("userShopController")
 @RequestMapping("/user/shop")
-public class UserShopController {
+public class ShopController {
 
     @Autowired
     private RedisTemplate redisTemplate;

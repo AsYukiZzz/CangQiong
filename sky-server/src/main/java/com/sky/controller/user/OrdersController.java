@@ -20,9 +20,9 @@ import org.springframework.web.bind.annotation.*;
  * 订单相关接口
  */
 @Slf4j
-@RestController
+@RestController("userOrdersController")
 @RequestMapping("/user/order")
-public class UserOrdersController {
+public class OrdersController {
 
     @Autowired
     private OrdersService ordersService;
